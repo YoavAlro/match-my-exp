@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Subscription Plans</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 24px;
+      }
+      .plans {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      article {
+        border: 1px solid #999;
+        padding: 18px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Subscription Plans</h1>
+      <div class="plans">
+        <article data-benchmark-key="basic-card" aria-label="Basic plan">
+          <h2>Basic</h2>
+          <p>$20 per month</p>
+          <ul>
+            <li>Email support</li>
+            <li>One workspace</li>
+          </ul>
+          <button data-benchmark-key="basic-renew" type="button">Renew</button>
+        </article>
+        <article aria-label="Pro plan">
+          <h2>Pro</h2>
+          <p>$45 per month</p>
+          <ul data-benchmark-key="pro-features">
+            <li>Priority support</li>
+            <li>Five workspaces</li>
+          </ul>
+          <button data-benchmark-key="pro-renew" type="button">Renew</button>
+        </article>
+        <article aria-label="Team plan">
+          <h2>Team</h2>
+          <p data-benchmark-key="team-price">$80 per month</p>
+          <ul>
+            <li>Dedicated support</li>
+            <li>Unlimited workspaces</li>
+          </ul>
+          <button data-benchmark-key="team-renew" type="button">Renew</button>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

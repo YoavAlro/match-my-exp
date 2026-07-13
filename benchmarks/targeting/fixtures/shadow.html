@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Account Settings</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Account Settings</h1>
+      <button data-benchmark-key="light-save" type="button">Save</button>
+      <preferences-panel aria-label="Preferences component"></preferences-panel>
+      <private-panel></private-panel>
+    </main>
+    <script>
+      const preferences = document
+        .querySelector('preferences-panel')
+        .attachShadow({ mode: 'open' });
+      preferences.innerHTML = `
+        <section aria-label="Preferences">
+          <h2 data-benchmark-key="preferences-heading">Preferences</h2>
+          <label>Notification frequency
+            <select data-benchmark-key="notification-frequency" aria-label="Notification frequency"><option>Daily</option><option>Weekly</option></select>
+          </label>
+          <theme-control aria-label="Theme control"></theme-control>
+          <button data-benchmark-key="shadow-save" type="button">Save settings</button>
+        </section>`;
+      const theme = preferences
+        .querySelector('theme-control')
+        .attachShadow({ mode: 'open' });
+      theme.innerHTML = `<button data-benchmark-key="theme-toggle" type="button" aria-label="Toggle dark theme">Dark theme</button>`;
+      const privateRoot = document
+        .querySelector('private-panel')
+        .attachShadow({ mode: 'closed' });
+      privateRoot.innerHTML = `<span>closed-shadow-secret</span>`;
+    </script>
+  </body>
+</html>

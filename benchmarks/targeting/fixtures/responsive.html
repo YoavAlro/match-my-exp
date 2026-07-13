@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Knowledge Base</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+      }
+      .shell {
+        display: grid;
+        grid-template-columns: 240px 1fr;
+        min-height: 100vh;
+      }
+      .desktop-sidebar {
+        padding: 20px;
+        background: #eee;
+      }
+      .mobile-header,
+      .mobile-nav {
+        display: none;
+      }
+      main {
+        padding: 24px;
+      }
+      @media (max-width: 600px) {
+        .shell {
+          display: block;
+        }
+        .desktop-sidebar,
+        .desktop-search {
+          display: none;
+        }
+        .mobile-header {
+          display: flex;
+          padding: 12px;
+        }
+        .mobile-nav {
+          display: flex;
+          position: fixed;
+          inset: auto 0 0;
+          justify-content: space-around;
+          padding: 12px;
+          background: #eee;
+        }
+        main {
+          padding: 16px 16px 72px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="mobile-header">
+      <button
+        data-benchmark-key="mobile-menu"
+        type="button"
+        aria-label="Open menu"
+      >
+        Menu
+      </button>
+    </header>
+    <div class="shell">
+      <aside
+        data-benchmark-key="desktop-sidebar"
+        class="desktop-sidebar"
+        aria-label="Documentation sidebar"
+      >
+        <nav>
+          <a href="/guides">Guides</a><a href="/reference">Reference</a>
+        </nav>
+      </aside>
+      <main>
+        <label class="desktop-search"
+          >Search documentation
+          <input
+            data-benchmark-key="desktop-search"
+            type="search"
+            aria-label="Search documentation"
+        /></label>
+        <h1>Knowledge Base</h1>
+        <p>Find product guides and reference material.</p>
+      </main>
+    </div>
+    <nav
+      data-benchmark-key="mobile-bottom-nav"
+      class="mobile-nav"
+      aria-label="Mobile navigation"
+    >
+      <a data-benchmark-key="mobile-home" href="/home">Home</a>
+      <a data-benchmark-key="mobile-saved" href="/saved">Saved</a>
+      <a data-benchmark-key="mobile-profile" href="/profile">Profile</a>
+    </nav>
+  </body>
+</html>

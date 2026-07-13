@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Workspace</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 24px;
+      }
+      article {
+        border-bottom: 1px solid #bbb;
+        padding: 12px 0;
+      }
+      .badge {
+        border-radius: 12px;
+        padding: 2px 8px;
+        background: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="app">
+      <h1>Workspace</h1>
+      <button id="open-inbox" type="button">Open inbox</button>
+    </main>
+    <script>
+      const app = document.querySelector('#app');
+      document.querySelector('#open-inbox').addEventListener('click', () => {
+        history.pushState({}, '', '/app/inbox');
+        document.title = 'Inbox';
+        app.innerHTML = `
+          <nav aria-label="Mailbox navigation"><a href="/app/inbox">Inbox</a><a href="/app/archive">Archive</a></nav>
+          <h1>Inbox</h1>
+          <button data-benchmark-key="compose-button" type="button">Compose</button>
+          <section aria-label="Messages">
+            <article aria-label="Message from Project Alpha">
+              <h2>Project Alpha</h2><span data-benchmark-key="alpha-unread" class="badge">3 unread</span>
+              <p>Milestone review is ready.</p><button type="button">Archive</button>
+            </article>
+            <article data-benchmark-key="finance-message" aria-label="Message from Finance">
+              <h2>Finance</h2><span data-benchmark-key="finance-unread" class="badge">1 unread</span>
+              <p>The monthly invoice is available.</p><button data-benchmark-key="finance-archive" type="button">Archive</button>
+            </article>
+          </section>`;
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Quarterly Report</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+      }
+      header,
+      main {
+        padding: 24px;
+      }
+      nav {
+        display: flex;
+        gap: 16px;
+      }
+      .layout {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 24px;
+      }
+      .notice {
+        border: 1px solid #777;
+        padding: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Primary navigation">
+        <a href="/overview">Overview</a>
+        <a data-benchmark-key="nav-account" href="/account">Account</a>
+        <a href="/help">Help</a>
+      </nav>
+    </header>
+    <main>
+      <h1>Quarterly Report</h1>
+      <div class="layout">
+        <article
+          data-benchmark-key="article-main"
+          aria-label="Quarterly report article"
+        >
+          <section>
+            <h2 data-benchmark-key="heading-overview">Overview</h2>
+            <p>Revenue increased while support response times improved.</p>
+          </section>
+          <section>
+            <h2 data-benchmark-key="heading-security">Security</h2>
+            <p>All account administrators completed the security review.</p>
+          </section>
+          <button data-benchmark-key="download-report" type="button">
+            Download report
+          </button>
+        </article>
+        <aside
+          data-benchmark-key="security-notice"
+          class="notice"
+          role="note"
+          aria-label="Security notice"
+        >
+          Review account recovery contacts before the next audit.
+        </aside>
+      </div>
+      <section hidden>hidden-static-secret</section>
+      <input aria-label="Recovery code" value="password-static-secret" />
+      <span id="hidden-label" hidden>hidden-labelled-secret</span>
+      <button aria-labelledby="hidden-label" type="button">
+        Visible fallback
+      </button>
+      <script id="script-label" type="application/json">
+        "script-labelled-secret"
+      </script>
+      <button aria-labelledby="script-label" type="button">
+        Script fallback
+      </button>
+      <label
+        >Notes <span hidden>hidden-form-label-secret</span
+        ><textarea>textarea-form-secret</textarea>
+      </label>
+      <div hidden>
+        <span id="nested-hidden-label">nested-hidden-secret</span>
+      </div>
+      <button aria-labelledby="nested-hidden-label" type="button">
+        Nested hidden fallback
+      </button>
+      <div aria-hidden="true">
+        <span id="nested-aria-label">nested-aria-secret</span>
+      </div>
+      <button aria-labelledby="nested-aria-label" type="button">
+        Nested aria fallback
+      </button>
+      <div style="display: none">
+        <span id="nested-display-label">nested-display-secret</span>
+      </div>
+      <button aria-labelledby="nested-display-label" type="button">
+        Nested display fallback
+      </button>
+      <div style="opacity: 0">
+        <span id="nested-opacity-label">nested-opacity-secret</span>
+      </div>
+      <button aria-labelledby="nested-opacity-label" type="button">
+        Nested opacity fallback
+      </button>
+      <div hidden>
+        <label for="external-notes">hidden-ancestor-form-secret</label>
+      </div>
+      <textarea id="external-notes">external-textarea-secret</textarea>
+    </main>
+  </body>
+</html>

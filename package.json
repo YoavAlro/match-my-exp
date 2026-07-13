@@ -19,7 +19,9 @@
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "audit:production": "npm audit --omit=dev",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run audit:production",
+    "benchmark:targeting": "tsx benchmarks/targeting/run.ts",
+    "benchmark:targeting:smoke": "tsx benchmarks/targeting/smoke.ts",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run benchmark:targeting:smoke && npm run test:coverage && npm run build && npm run audit:production",
     "postinstall": "wxt prepare"
   },
   "dependencies": {
@@ -43,7 +45,9 @@
     "globals": "^17.7.0",
     "jsdom": "^29.1.1",
     "markdownlint-cli2": "^0.23.0",
+    "playwright": "^1.61.1",
     "prettier": "^3.9.5",
+    "tsx": "^4.23.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.63.0",
     "vitest": "^4.1.10",

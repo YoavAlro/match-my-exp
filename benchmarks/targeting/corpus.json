@@ -1,0 +1,235 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "static-main-article",
+      "category": "static",
+      "fixtureId": "static-article",
+      "request": "Increase the line spacing throughout the quarterly report article.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["article-main"]
+    },
+    {
+      "id": "static-download-button",
+      "category": "static",
+      "fixtureId": "static-article",
+      "request": "Make the Download report button easier to see.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["download-report"]
+    },
+    {
+      "id": "static-security-notice",
+      "category": "static",
+      "fixtureId": "static-article",
+      "request": "Increase the contrast of the security notice beside the report.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["security-notice"]
+    },
+    {
+      "id": "static-section-headings",
+      "category": "static",
+      "fixtureId": "static-article",
+      "request": "Give both report section headings the same larger type.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["heading-overview", "heading-security"]
+    },
+    {
+      "id": "static-ambiguous-heading",
+      "category": "static",
+      "fixtureId": "static-article",
+      "request": "Make the section heading larger.",
+      "initialDecision": "clarify",
+      "clarificationAnswer": "The Security section heading.",
+      "clarificationKeywords": ["section", "heading"],
+      "expectedTargetKeys": ["heading-security"]
+    },
+    {
+      "id": "repeated-pro-renew",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "request": "Make the Renew button for the Pro plan more prominent.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["pro-renew"]
+    },
+    {
+      "id": "repeated-team-price",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "request": "Increase the size of the Team plan monthly price.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["team-price"]
+    },
+    {
+      "id": "repeated-all-renew",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "request": "Give every plan renewal action the same stronger emphasis.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["basic-renew", "pro-renew", "team-renew"]
+    },
+    {
+      "id": "repeated-pro-features",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "request": "Increase the spacing in the Pro plan feature list.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["pro-features"]
+    },
+    {
+      "id": "repeated-ambiguous-renew",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "request": "Make the Renew button easier to see.",
+      "initialDecision": "clarify",
+      "clarificationAnswer": "The Renew button in the Pro plan card.",
+      "clarificationKeywords": ["renew", "plan"],
+      "expectedTargetKeys": ["pro-renew"]
+    },
+    {
+      "id": "spa-compose",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "request": "Make the Compose button stand out more.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["compose-button"]
+    },
+    {
+      "id": "spa-alpha-unread",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "request": "Increase the contrast of the unread count in the Project Alpha message.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["alpha-unread"]
+    },
+    {
+      "id": "spa-all-unread",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "request": "Give all unread counters in the inbox the same higher contrast.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["alpha-unread", "finance-unread"]
+    },
+    {
+      "id": "spa-finance-archive",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "request": "Make the Archive button in the Finance message larger.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["finance-archive"]
+    },
+    {
+      "id": "spa-ambiguous-archive",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "request": "Make the Archive button larger.",
+      "initialDecision": "clarify",
+      "clarificationAnswer": "The Archive button in the Finance message.",
+      "clarificationKeywords": ["archive", "message"],
+      "expectedTargetKeys": ["finance-archive"]
+    },
+    {
+      "id": "responsive-desktop-sidebar",
+      "category": "responsive",
+      "fixtureId": "responsive-desktop",
+      "request": "Make the documentation sidebar on the left wider.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["desktop-sidebar"]
+    },
+    {
+      "id": "responsive-desktop-search",
+      "category": "responsive",
+      "fixtureId": "responsive-desktop",
+      "request": "Make the desktop documentation search field easier to see.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["desktop-search"]
+    },
+    {
+      "id": "responsive-mobile-navigation-items",
+      "category": "responsive",
+      "fixtureId": "responsive-mobile",
+      "request": "Make every item in the bottom mobile navigation larger.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["mobile-home", "mobile-saved", "mobile-profile"]
+    },
+    {
+      "id": "responsive-mobile-menu",
+      "category": "responsive",
+      "fixtureId": "responsive-mobile",
+      "request": "Make the mobile menu button larger.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["mobile-menu"]
+    },
+    {
+      "id": "responsive-ambiguous-navigation-item",
+      "category": "responsive",
+      "fixtureId": "responsive-mobile",
+      "request": "Make the navigation item larger.",
+      "initialDecision": "clarify",
+      "clarificationAnswer": "The Saved item in the mobile navigation.",
+      "clarificationKeywords": ["navigation", "item"],
+      "expectedTargetKeys": ["mobile-saved"]
+    },
+    {
+      "id": "shadow-notification-frequency",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "request": "Make the notification frequency control in Preferences larger.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["notification-frequency"]
+    },
+    {
+      "id": "shadow-save-settings",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "request": "Increase the contrast of the Save settings button inside Preferences.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["shadow-save"]
+    },
+    {
+      "id": "shadow-theme-toggle",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "request": "Make the dark theme control easier to see.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["theme-toggle"]
+    },
+    {
+      "id": "shadow-all-save-controls",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "request": "Give both visible save controls the same larger type.",
+      "initialDecision": "select",
+      "clarificationAnswer": null,
+      "expectedTargetKeys": ["light-save", "shadow-save"]
+    },
+    {
+      "id": "shadow-ambiguous-save",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "request": "Make the save control larger.",
+      "initialDecision": "clarify",
+      "clarificationAnswer": "The Save settings button inside Preferences.",
+      "clarificationKeywords": ["save", "button"],
+      "expectedTargetKeys": ["shadow-save"]
+    }
+  ]
+}
