@@ -228,7 +228,7 @@
       "request": "Make the save control larger.",
       "initialDecision": "clarify",
       "clarificationAnswer": "The Save settings button inside Preferences.",
-      "clarificationKeywords": ["save", "button"],
+      "clarificationKeywords": ["save", "save settings"],
       "expectedTargetKeys": ["shadow-save"]
     }
   ]

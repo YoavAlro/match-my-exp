@@ -1,0 +1,570 @@
+{
+  "schemaVersion": 1,
+  "benchmarkVersion": 1,
+  "sourceCommit": "29153a80901a572c9e6f97f910ab8360e0a6a043",
+  "recordedAt": "2026-07-13T10:24:24.014Z",
+  "provider": "azure-openai",
+  "deployment": "gpt-5.6-luna",
+  "responseModels": ["gpt-5.6-luna"],
+  "configuration": {
+    "reasoningEffort": "low",
+    "maxOutputTokens": 1024,
+    "semanticRetries": 0,
+    "idStrategy": "case-id-sha256-prefix"
+  },
+  "hashes": {
+    "corpusSha256": "624e14eacf312da60c1288773484a9b93def485c3ca68cf1ffd37314602f3e19",
+    "promptSha256": "5e6bc1f0cf6ab087a33ca3e95a2aeed979005d3257c626d5dff9673b3026dd6a",
+    "contextsSha256": "6dbad047d07989a5bc5d213f1ef3245849255e898e87b1671dc2466ad0bc1f45"
+  },
+  "summary": {
+    "passed": false,
+    "successful": 24,
+    "total": 25,
+    "successRate": 0.96,
+    "ambiguousClarifications": 4,
+    "ambiguousTotal": 5,
+    "ambiguousMutations": 0,
+    "categoryGate": true,
+    "categories": {
+      "static": {
+        "successful": 5,
+        "total": 5
+      },
+      "spa": {
+        "successful": 5,
+        "total": 5
+      },
+      "repeated": {
+        "successful": 5,
+        "total": 5
+      },
+      "responsive": {
+        "successful": 5,
+        "total": 5
+      },
+      "shadow": {
+        "successful": 4,
+        "total": 5
+      }
+    }
+  },
+  "cases": [
+    {
+      "id": "static-main-article",
+      "category": "static",
+      "fixtureId": "static-article",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-4f0ff3e2-a"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "9ef9af0e36bf247e691181ac7026dbaea6c58856fbbf1ee05ee53d959c2888be",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-4f0ff3e2-a"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "static-download-button",
+      "category": "static",
+      "fixtureId": "static-article",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-5fcb9204-h"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "cd7535f36cd70e5735bcc413fa731ac80249a8c0c73e20046dffe040de7f7af6",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-5fcb9204-h"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "static-security-notice",
+      "category": "static",
+      "fixtureId": "static-article",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-62406dff-i"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "7d95bc944afc4bc8bd788004721eed51bfe091a85bceb2bf968ab2d6effb5b01",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-62406dff-i"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "static-section-headings",
+      "category": "static",
+      "fixtureId": "static-article",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-33dceff5-c", "element-33dceff5-f"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "aa3233ef9ae90509b398f4febbbdd4f8c069aa34bf483d48ae1b10381f60c5a4",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-33dceff5-c", "element-33dceff5-f"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "static-ambiguous-heading",
+      "category": "static",
+      "fixtureId": "static-article",
+      "expectedInitialDecision": "clarify",
+      "expectedElementIds": ["element-b3407dbe-f"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "3d6e44a7302edc1c678fd1810d9cbcbcc849d93764f4f438ef08a071669e9f7a",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        },
+        {
+          "responseIdSha256": "0a2344939dd40c961888ab89648cb8b2adaee73272f30cd093c19240204e3901",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "clarify",
+      "initialSelectedElementIds": [],
+      "clarificationQuestion": "Which section heading should be larger: “Overview” or “Security”? ",
+      "finalSelectedElementIds": ["element-b3407dbe-f"]
+    },
+    {
+      "id": "repeated-pro-renew",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-cfbaec9c-i"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "94c48089fab0a52c12713adb688d052cb0a044aa31e7c6848350a2ae51711373",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-cfbaec9c-i"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "repeated-team-price",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-94cf3906-l"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "cce6ac01a24b5c0a804d09cc3d5a9eb6e23389d7f72a2cbf3d01d0829b070225",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-94cf3906-l"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "repeated-all-renew",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": [
+        "element-9cc4bc8c-b",
+        "element-9cc4bc8c-i",
+        "element-9cc4bc8c-p"
+      ],
+      "providerCalls": [
+        {
+          "responseIdSha256": "9c2ccd29233d1dff03a47341f6f6a2a1e0da9ec76aa2702496f21f146938a72f",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": [
+        "element-9cc4bc8c-b",
+        "element-9cc4bc8c-i",
+        "element-9cc4bc8c-p"
+      ],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "repeated-pro-features",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-7b8dc793-f"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "51a87b76a64c8b3691e94d09c813d8fa68f14bb38c689ddf59e54b3fd633edd4",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-7b8dc793-f"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "repeated-ambiguous-renew",
+      "category": "repeated",
+      "fixtureId": "subscription-plans",
+      "expectedInitialDecision": "clarify",
+      "expectedElementIds": ["element-c8e1badc-i"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "1784ae20e303569a0c7c954482a311cfcb21a68df97ead3530bf2967d9b17506",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        },
+        {
+          "responseIdSha256": "a887f57f232760798859340342651d58269358ddd26377b29e08dbb25a2b1680",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "clarify",
+      "initialSelectedElementIds": [],
+      "clarificationQuestion": "Which Renew button should be made easier to see: Basic, Pro, or Team?",
+      "finalSelectedElementIds": ["element-c8e1badc-i"]
+    },
+    {
+      "id": "spa-compose",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-a3e1eede-7"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "71de0f6e24e91ac47cf477e20380328d7aec79a82b588537149a9ed37dffafe6",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-a3e1eede-7"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "spa-alpha-unread",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-cde9a140-b"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "6738db55eeb8ed178f410eb4ef6388e583c1d120a55118c649bd0de2872c4737",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-cde9a140-b"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "spa-all-unread",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-93a6ea01-b", "element-93a6ea01-g"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "78ecd8bcf2e72658dbe0479e5a9f2037053d5e71989590fee80e698e8287a8b1",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-93a6ea01-b", "element-93a6ea01-g"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "spa-finance-archive",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-747ce72b-i"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "b83f9fc26870b1f7d29ff28f83e3b748723488fb20e11cd2a48eee6917fa4136",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-747ce72b-i"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "spa-ambiguous-archive",
+      "category": "spa",
+      "fixtureId": "spa-inbox",
+      "expectedInitialDecision": "clarify",
+      "expectedElementIds": ["element-3dcf1f3e-i"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "a97be44553460576de54f79e0ab4544fefd11d43f1ac7b7b35b6ebb9207d7159",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        },
+        {
+          "responseIdSha256": "24ba33146f17afb2179b58411556d78692e77e2609f09dcc0aaf9c8e4bd6dc3f",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "clarify",
+      "initialSelectedElementIds": [],
+      "clarificationQuestion": "Which Archive button should be made larger: the one in the Project Alpha message or the one in the Finance message?",
+      "finalSelectedElementIds": ["element-3dcf1f3e-i"]
+    },
+    {
+      "id": "responsive-desktop-sidebar",
+      "category": "responsive",
+      "fixtureId": "responsive-desktop",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-0d24eb0a-3"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "6dc0da32a14eb9c80aca2177b6de98f54b042ff03c2b257c8eb6ed0413f2e47f",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-0d24eb0a-3"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "responsive-desktop-search",
+      "category": "responsive",
+      "fixtureId": "responsive-desktop",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-043fdda8-9"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "f005766d97ef97755a3dc731ce9ec5114c148014514562f859fd44637f79a821",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-043fdda8-9"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "responsive-mobile-navigation-items",
+      "category": "responsive",
+      "fixtureId": "responsive-mobile",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": [
+        "element-dec225ac-9",
+        "element-dec225ac-a",
+        "element-dec225ac-b"
+      ],
+      "providerCalls": [
+        {
+          "responseIdSha256": "1044a1bef02bebec588db7a72f4af4616e7c98a9e15ecdafc3d091caa435d754",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": [
+        "element-dec225ac-9",
+        "element-dec225ac-a",
+        "element-dec225ac-b"
+      ],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "responsive-mobile-menu",
+      "category": "responsive",
+      "fixtureId": "responsive-mobile",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-26905605-3"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "b26b7d1f23b1c25aea665b3be46daf8e3554ae477c1ee8df19ac65d1c7023f51",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-26905605-3"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "responsive-ambiguous-navigation-item",
+      "category": "responsive",
+      "fixtureId": "responsive-mobile",
+      "expectedInitialDecision": "clarify",
+      "expectedElementIds": ["element-30b24b73-a"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "462dd50e77a6276ac698f54b4c0def05248b441ec57e7772c661f950f744e40e",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        },
+        {
+          "responseIdSha256": "c692bca54f778f9aaacaec998fcda797d30cb3e784477804e1e16ba3828eceff",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "clarify",
+      "initialSelectedElementIds": [],
+      "clarificationQuestion": "Which navigation item should be made larger: Home, Saved, or Profile?",
+      "finalSelectedElementIds": ["element-30b24b73-a"]
+    },
+    {
+      "id": "shadow-notification-frequency",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-ad27aadb-9"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "155c0408d2199b9d4278687df22f0f96c6230804169b755cbe7539fb1aa36623",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-ad27aadb-9"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "shadow-save-settings",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-213363c0-e"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "77033e774d178bd3485ed8c653e81c70f0905301942b7bbc16412787842d2c3f",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-213363c0-e"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "shadow-theme-toggle",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-fc921b67-d"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "f509b3a93db906e65d2de0899578ad580d2be0eec1015eaf305f08291462c09f",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-fc921b67-d"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "shadow-all-save-controls",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "expectedInitialDecision": "select",
+      "expectedElementIds": ["element-a751bcc1-4", "element-a751bcc1-e"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "c655cc48201460819c510a6b73b2619a46c42d89133630f22fff45641f52eb0e",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": true,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "select",
+      "initialSelectedElementIds": ["element-a751bcc1-4", "element-a751bcc1-e"],
+      "clarificationQuestion": null
+    },
+    {
+      "id": "shadow-ambiguous-save",
+      "category": "shadow",
+      "fixtureId": "shadow-preferences",
+      "expectedInitialDecision": "clarify",
+      "expectedElementIds": ["element-ad34807d-e"],
+      "providerCalls": [
+        {
+          "responseIdSha256": "7556c608b97d3010c7dc0984c87661adc4847dc61e1e8fe5cfd8c22aeab7b064",
+          "responseModel": "gpt-5.6-luna",
+          "systemFingerprint": null
+        }
+      ],
+      "success": false,
+      "ambiguousMutation": false,
+      "actualInitialDecision": "clarify",
+      "initialSelectedElementIds": [],
+      "clarificationQuestion": "Which save control should be made larger: “Save” or “Save settings”?",
+      "failure": "irrelevant_clarification_question"
+    }
+  ]
+}
