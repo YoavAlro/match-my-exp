@@ -32,6 +32,8 @@ Exit criteria:
 
 M0-04 records its conditional Store decision and release fallback in the
 [Chrome Web Store operation policy assessment](../spikes/chrome-web-store-operation-policy.md).
+M0-05 records its fixture corpus, accepted campaign, and limitations in the
+[chat-only targeting benchmark](../spikes/chat-only-targeting-benchmark.md).
 
 ## M1: Styling Vertical Slice
 

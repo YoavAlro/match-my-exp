@@ -70,6 +70,10 @@ The result applies only to the exact model, prompt, corpus, contexts, and
 configuration recorded in the evidence file. It does not establish parity for
 other providers or a statistical population guarantee.
 
+The accepted M0-05 campaign is `evidence/azure-gpt-5.6-luna-run-4.json`. The
+decision and limitations are documented in
+`docs/spikes/chat-only-targeting-benchmark.md`.
+
 ## Promotion
 
 M1-03 may promote the proven extraction policy into `src/modules/inspection`.
