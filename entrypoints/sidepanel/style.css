@@ -1,0 +1,147 @@
+:root {
+  color: #25231f;
+  background: #f2eee6;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+  padding: 24px 20px 18px;
+  background:
+    radial-gradient(circle at 85% 6%, rgb(210 100 61 / 16%), transparent 28%),
+    linear-gradient(160deg, #fbf8f1 0%, #eee8dc 100%);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand__mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #25231f;
+  border-radius: 50%;
+  color: #f9f5ec;
+  background: #25231f;
+  font-size: 20px;
+}
+
+.brand__eyebrow,
+.welcome__step {
+  margin: 0;
+  color: #9d472d;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+h1 {
+  margin: 2px 0 0;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.welcome {
+  align-self: center;
+  max-width: 320px;
+  padding-bottom: 48px;
+}
+
+.welcome h2 {
+  margin: 12px 0 16px;
+  font-size: clamp(36px, 12vw, 52px);
+  font-weight: 400;
+  letter-spacing: -0.045em;
+  line-height: 0.95;
+}
+
+.welcome p:last-child {
+  margin: 0;
+  color: #635e54;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-top: 1px solid rgb(37 35 31 / 16%);
+  padding-top: 14px;
+  color: #635e54;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
+}
+
+.status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #46825d;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .brand__mark {
+    transition: transform 180ms ease;
+  }
+
+  .brand:hover .brand__mark {
+    transform: rotate(-8deg);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f2eee6;
+    background: #1e1c19;
+  }
+
+  .shell {
+    background:
+      radial-gradient(circle at 85% 6%, rgb(210 100 61 / 20%), transparent 28%),
+      linear-gradient(160deg, #27231e 0%, #191816 100%);
+  }
+
+  .brand__mark {
+    border-color: #f2eee6;
+    color: #25231f;
+    background: #f2eee6;
+  }
+
+  .welcome p:last-child,
+  .status {
+    color: #bab3a7;
+  }
+
+  .status {
+    border-color: rgb(242 238 230 / 16%);
+  }
+}
