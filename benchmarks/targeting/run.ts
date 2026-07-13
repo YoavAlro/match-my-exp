@@ -24,6 +24,12 @@ const main = async () => {
   }
 
   const provider = new AzureTargetingProvider();
+  const evidenceLabel = process.env.TARGETING_EVIDENCE_LABEL ?? 'campaign';
+  if (!/^[a-z0-9-]+$/.test(evidenceLabel)) {
+    throw new Error(
+      'TARGETING_EVIDENCE_LABEL must contain lowercase letters, numbers, or hyphens',
+    );
+  }
   const corpus = await loadCorpus();
   const browser = await chromium.launch({ headless: true });
   const pages = new Map<string, Awaited<ReturnType<typeof browser.newPage>>>();
@@ -148,7 +154,7 @@ const main = async () => {
   const evidenceDirectory = resolve('benchmarks/targeting/evidence');
   await mkdir(evidenceDirectory, { recursive: true });
   await writeFile(
-    resolve(evidenceDirectory, `azure-${provider.model}.json`),
+    resolve(evidenceDirectory, `azure-${provider.model}-${evidenceLabel}.json`),
     `${JSON.stringify(evidence, null, 2)}\n`,
   );
   process.stdout.write(

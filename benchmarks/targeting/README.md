@@ -63,6 +63,9 @@ npm run benchmark:targeting
 dirty worktree, performs no semantic retries, redacts provider bodies, and
 writes only bounded structured decisions to `evidence/`.
 
+Set `TARGETING_EVIDENCE_LABEL` to give each complete campaign a stable filename.
+Failed campaigns remain versioned rather than being overwritten.
+
 The result applies only to the exact model, prompt, corpus, contexts, and
 configuration recorded in the evidence file. It does not establish parity for
 other providers or a statistical population guarantee.

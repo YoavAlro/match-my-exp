@@ -44,7 +44,7 @@
       "request": "Make the section heading larger.",
       "initialDecision": "clarify",
       "clarificationAnswer": "The Security section heading.",
-      "clarificationKeywords": ["section", "heading"],
+      "clarificationKeywords": ["overview", "security"],
       "expectedTargetKeys": ["heading-security"]
     },
     {
@@ -90,7 +90,7 @@
       "request": "Make the Renew button easier to see.",
       "initialDecision": "clarify",
       "clarificationAnswer": "The Renew button in the Pro plan card.",
-      "clarificationKeywords": ["renew", "plan"],
+      "clarificationKeywords": ["basic", "pro", "team"],
       "expectedTargetKeys": ["pro-renew"]
     },
     {
@@ -136,7 +136,7 @@
       "request": "Make the Archive button larger.",
       "initialDecision": "clarify",
       "clarificationAnswer": "The Archive button in the Finance message.",
-      "clarificationKeywords": ["archive", "message"],
+      "clarificationKeywords": ["project alpha", "finance"],
       "expectedTargetKeys": ["finance-archive"]
     },
     {
@@ -182,7 +182,7 @@
       "request": "Make the navigation item larger.",
       "initialDecision": "clarify",
       "clarificationAnswer": "The Saved item in the mobile navigation.",
-      "clarificationKeywords": ["navigation", "item"],
+      "clarificationKeywords": ["home", "saved", "profile"],
       "expectedTargetKeys": ["mobile-saved"]
     },
     {
