@@ -24,3 +24,7 @@ Run all local checks:
 ```bash
 npm run check
 ```
+
+The check suite validates formatting, Markdown and source linting, strict types,
+unit-test coverage, the production extension build, and production dependency
+advisories.

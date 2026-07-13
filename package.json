@@ -11,8 +11,15 @@
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
     "zip:firefox": "wxt zip -b firefox",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "eslint . && markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "check": "npm run typecheck && npm run build",
+    "audit:production": "npm audit --omit=dev",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run audit:production",
     "postinstall": "wxt prepare"
   },
   "dependencies": {
@@ -20,10 +27,25 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitest/coverage-v8": "^4.1.10",
     "@wxt-dev/module-react": "^1.1.5",
+    "axe-core": "^4.12.1",
+    "eslint": "^10.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.3",
+    "globals": "^17.7.0",
+    "jsdom": "^29.1.1",
+    "markdownlint-cli2": "^0.23.0",
+    "prettier": "^3.9.5",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10",
     "wxt": "^0.20.27"
   }
 }

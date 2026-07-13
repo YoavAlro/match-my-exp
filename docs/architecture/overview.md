@@ -57,18 +57,18 @@ and error redaction.
 
 ## Modules
 
-| Module | Responsibility |
-| --- | --- |
-| `contracts` | Versioned profile, proposal, operation, target, and message schemas |
-| `inspection` | Bounded, privacy-filtered page context extraction |
-| `targeting` | Ephemeral references, durable locators, and exact resolution |
-| `transforms` | Preflight, apply, journal, rollback, and health diagnostics |
-| `profiles` | Profile matching, specificity, revisions, and health state |
-| `providers` | Provider adapters, transport, and normalized responses |
-| `persistence` | Profile, settings, credential, and conversation repositories |
-| `permissions` | Origin grants and dynamic content-script reconciliation |
-| `chat` | Conversation, proposal, draft, and preview orchestration |
-| `sidepanel` | Accessible React presentation and interaction |
+| Module        | Responsibility                                                      |
+| ------------- | ------------------------------------------------------------------- |
+| `contracts`   | Versioned profile, proposal, operation, target, and message schemas |
+| `inspection`  | Bounded, privacy-filtered page context extraction                   |
+| `targeting`   | Ephemeral references, durable locators, and exact resolution        |
+| `transforms`  | Preflight, apply, journal, rollback, and health diagnostics         |
+| `profiles`    | Profile matching, specificity, revisions, and health state          |
+| `providers`   | Provider adapters, transport, and normalized responses              |
+| `persistence` | Profile, settings, credential, and conversation repositories        |
+| `permissions` | Origin grants and dynamic content-script reconciliation             |
+| `chat`        | Conversation, proposal, draft, and preview orchestration            |
+| `sidepanel`   | Accessible React presentation and interaction                       |
 
 Each module exposes a narrow public API through `index.ts`. Cross-module imports
 must not reach internal files.
@@ -150,13 +150,13 @@ unbounded rescans.
 
 ## Storage
 
-| Data | Storage | Content-script access |
-| --- | --- | --- |
-| Profiles and revisions | `chrome.storage.local` | No |
-| Settings and consent | `chrome.storage.local` | No |
-| Provider credentials | `chrome.storage.local` | No |
-| Visible conversations | IndexedDB | No |
-| Preview and request state | Memory or `chrome.storage.session` | No direct access |
+| Data                      | Storage                            | Content-script access |
+| ------------------------- | ---------------------------------- | --------------------- |
+| Profiles and revisions    | `chrome.storage.local`             | No                    |
+| Settings and consent      | `chrome.storage.local`             | No                    |
+| Provider credentials      | `chrome.storage.local`             | No                    |
+| Visible conversations     | IndexedDB                          | No                    |
+| Preview and request state | Memory or `chrome.storage.session` | No direct access      |
 
 Local extension storage is restricted to trusted extension contexts. Content
 scripts request only the profile and operation data required for their own tab.

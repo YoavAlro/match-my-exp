@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { SidePanel } from './SidePanel';
+import { SidePanel } from '@/src/modules/sidepanel';
 import './style.css';
 
 const root = document.getElementById('root');

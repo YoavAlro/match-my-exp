@@ -37,6 +37,9 @@ documentation in the same change as public behavior or contract changes.
 
 ```bash
 npm run dev
+npm run lint
+npm run test
+npm run test:coverage
 npm run typecheck
 npm run build
 npm run check
