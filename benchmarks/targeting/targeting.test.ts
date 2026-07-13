@@ -206,7 +206,8 @@ describe('targeting benchmark', () => {
           schemaVersion: 1,
           decision: 'clarify',
           selectedElementIds: [],
-          clarificationQuestion: 'Which Renew button: Basic, Pro, or Team?',
+          clarificationQuestion:
+            'Which Renew button: Basic, Pro, or Team? Extra',
         }),
         providerDecision({
           schemaVersion: 1,

@@ -92,7 +92,7 @@ const isRelevantClarification = (
 ) => {
   const normalizedQuestion = question.trim().toLowerCase();
   const interrogative =
-    normalizedQuestion.endsWith('?') &&
+    normalizedQuestion.includes('?') &&
     /^(?:which|what|where|do you|did you|would you|could you|should|are you|is it)\b/.test(
       normalizedQuestion,
     );
