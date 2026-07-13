@@ -30,6 +30,9 @@ Exit criteria:
 | M0-07  | [Validate BYOK provider networking](https://github.com/YoavAlro/match-my-exp/issues/10)         |
 | M0-08  | [Establish automated quality checks](https://github.com/YoavAlro/match-my-exp/issues/1)         |
 
+M0-04 records its conditional Store decision and release fallback in the
+[Chrome Web Store operation policy assessment](../spikes/chrome-web-store-operation-policy.md).
+
 ## M1: Styling Vertical Slice
 
 Deliver a complete path from side-panel chat through minimized page inspection,
