@@ -15,6 +15,8 @@ provider-specific consent before page context can be collected or transmitted.
 - Bind consent to page origin, provider kind, and provider origin
 - Make repeated ready requests idempotent
 - Remove host permission and all origin consent on revocation
+- Reconcile persistent dynamic content scripts to enabled, still-permitted
+  profile origins
 
 ## Public API
 
@@ -22,6 +24,10 @@ provider-specific consent before page context can be collected or transmitted.
 host-permission and consent-storage adapters. `ChromeConsentStorage` persists
 strict records in one trusted local key; `MemoryConsentStorage` supports
 deterministic tests.
+
+`ContentScriptRegistrationService` adds only missing enabled-origin scripts and
+removes stale, revoked, or unused registrations without touching registrations
+owned by other extension features.
 
 ## Invariants
 

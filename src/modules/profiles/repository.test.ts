@@ -65,6 +65,10 @@ describe('ProfileRepository', () => {
     expect(await repository.listByOrigin('https://missing.example')).toEqual(
       [],
     );
+    expect(await repository.enabledOrigins()).toEqual([
+      'https://example.com',
+      'https://other.example',
+    ]);
   });
 
   it('updates, disables, restores, and deletes with immutable history', async () => {

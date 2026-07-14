@@ -11,3 +11,10 @@ export {
   type HostPermissionAdapter,
   type ProviderDestination,
 } from './access';
+export {
+  ChromeContentScriptRegistrationAdapter,
+  ContentScriptRegistrationService,
+  type ContentScriptRegistration,
+  type ContentScriptRegistrationAdapter,
+} from './registrations';
+export { installProfileRegistrations } from './install-registrations';

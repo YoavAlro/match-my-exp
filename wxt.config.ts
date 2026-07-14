@@ -12,4 +12,11 @@ export default defineConfig({
       default_title: 'Open Match My Exp',
     },
   },
+  hooks: {
+    'build:manifestGenerated': (_wxt, manifest) => {
+      manifest.host_permissions = manifest.host_permissions?.filter(
+        (permission: string) => permission !== 'https://*/*',
+      );
+    },
+  },
 });

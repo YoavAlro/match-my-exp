@@ -112,6 +112,17 @@ export class ProfileRepository {
       .map(clone);
   }
 
+  async enabledOrigins() {
+    const state = await this.#readState();
+    return [
+      ...new Set(
+        Object.values(state.profiles)
+          .filter(({ enabled }) => enabled)
+          .map(({ origin }) => origin),
+      ),
+    ].toSorted();
+  }
+
   async create(input: unknown) {
     const profile = ProfileSchema.parse(input);
     if (profile.revision !== 1) {
