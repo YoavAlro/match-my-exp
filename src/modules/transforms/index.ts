@@ -1,4 +1,9 @@
 export {
+  AriaPreviewError,
+  AriaPreviewRegistry,
+  type ResolvedAriaOperation,
+} from './aria';
+export {
   StylePreviewError,
   StylePreviewRegistry,
   type CssSupport,

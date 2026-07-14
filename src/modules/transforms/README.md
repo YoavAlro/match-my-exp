@@ -4,8 +4,9 @@
 
 Compile validated declarative operations into exact, reversible page changes.
 
-The current production surface implements style operations only. Movement,
-ARIA, keyboard actions, and mixed rich transactions arrive in M3.
+The production surface implements style operations and conservative ARIA
+attributes. Movement, keyboard actions, and mixed rich transactions arrive in
+later M3 tickets.
 
 ## Responsibilities
 
@@ -15,6 +16,8 @@ ARIA, keyboard actions, and mixed rich transactions arrive in M3.
 - Scope CSS rules to exact resolved targets through extension-owned tokens
 - Apply, replace, and roll back preview styles synchronously
 - Preserve page inline styles, classes, attributes, and unrelated preview tokens
+- Reject unsafe ARIA roles, missing references, and hiding focused content
+- Apply and compare-and-restore ARIA attributes without overwriting page changes
 
 ## Public API
 
