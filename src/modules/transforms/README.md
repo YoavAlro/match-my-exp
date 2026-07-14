@@ -4,9 +4,9 @@
 
 Compile validated declarative operations into exact, reversible page changes.
 
-The production surface implements style operations and conservative ARIA
-attributes. Movement, keyboard actions, and mixed rich transactions arrive in
-later M3 tickets.
+The production surface implements style operations, conservative ARIA
+attributes, predefined keyboard focus/scroll actions, and reversible same-root
+movement. Mixed rich transactions arrive in M3-04.
 
 ## Responsibilities
 
@@ -18,6 +18,12 @@ later M3 tickets.
 - Preserve page inline styles, classes, attributes, and unrelated preview tokens
 - Reject unsafe ARIA roles, missing references, and hiding focused content
 - Apply and compare-and-restore ARIA attributes without overwriting page changes
+- Reject reserved/conflicting shortcuts and bypass editable controls
+- Resolve keyboard targets dynamically and clean up listeners on disable
+- Move existing nodes with state-preserving `moveBefore()` and identity markers
+- Preserve page-owned relocation conflicts instead of yanking nodes back
+- Apply style, movement, ARIA, and keyboard primitives in deterministic order
+- Compensate completed primitives in exact reverse order after any failure
 
 ## Public API
 
