@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Atomic Preview Fixture</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 24px;
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      section {
+        border: 1px solid #999;
+        min-height: 100px;
+        padding: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Atomic Preview Fixture</h1>
+      <div class="columns">
+        <section
+          data-spike-id="element-source-parent"
+          aria-label="Source region"
+        >
+          <span data-spike-id="element-source-before">Before</span>
+          <button data-spike-id="element-source" type="button">Move me</button>
+          <span data-spike-id="element-source-after">After</span>
+        </section>
+        <section
+          data-spike-id="element-destination"
+          aria-label="Destination region"
+        >
+          <span data-spike-id="element-destination-child"
+            >Destination child</span
+          >
+        </section>
+        <section
+          data-spike-id="element-third"
+          aria-label="Third region"
+        ></section>
+      </div>
+      <p
+        data-spike-id="element-style"
+        style="color: rgb(10, 20, 30) !important; padding-left: 2px"
+      >
+        Style target
+      </p>
+      <button
+        data-spike-id="element-aria"
+        aria-label="Original label"
+        type="button"
+      >
+        ARIA target
+      </button>
+      <div data-spike-id="element-cycle-parent">
+        <div data-spike-id="element-cycle-child">Cycle child</div>
+      </div>
+      <shadow-one></shadow-one>
+      <shadow-two></shadow-two>
+    </main>
+    <script>
+      const source = document.querySelector('[data-spike-id="element-source"]');
+      globalThis.fixtureSource = source;
+      globalThis.fixtureClicks = 0;
+      source.addEventListener('click', () => {
+        globalThis.fixtureClicks += 1;
+      });
+
+      const firstRoot = document
+        .querySelector('shadow-one')
+        .attachShadow({ mode: 'open' });
+      firstRoot.innerHTML = `
+        <section data-spike-id="element-shadow-region" aria-label="First shadow region">
+          <button data-spike-id="element-shadow-source" type="button">Shadow source</button>
+          <div data-spike-id="element-shadow-destination">Shadow destination</div>
+        </section>`;
+
+      const secondRoot = document
+        .querySelector('shadow-two')
+        .attachShadow({ mode: 'open' });
+      secondRoot.innerHTML = `
+        <section data-spike-id="element-other-shadow-region" aria-label="Second shadow region">
+          <div data-spike-id="element-other-shadow-destination">Other destination</div>
+        </section>`;
+    </script>
+  </body>
+</html>
