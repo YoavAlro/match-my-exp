@@ -20,6 +20,8 @@ local extension storage.
 - Resolve and apply one enabled profile deterministically without an AI request
 - Retry bounded settling, distinguish navigation interruption, and disable
   genuine drift with bounded diagnostics
+- Offer explicit user-initiated repair through the normal durable review and
+  revision path
 
 ## Public API
 
@@ -39,6 +41,10 @@ match or permission loss.
 `ProfileHealthService` retries only missing dynamic targets within a bounded
 settling window. Navigation interrupts without health changes; settled failure
 creates one disabled `needs-repair` revision.
+
+`ProfileRepairService` discloses the selected provider destination, proposes only
+after an explicit user call, preserves rejected disabled revisions, and accepts
+repairs as healthy new revisions.
 
 ## Invariants
 

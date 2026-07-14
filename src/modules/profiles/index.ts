@@ -15,6 +15,11 @@ export {
   type SettledApplicationResult,
 } from './health';
 export {
+  ProfileRepairError,
+  ProfileRepairService,
+  type RepairProposalRequest,
+} from './repair';
+export {
   PathPatternError,
   compareSpecificity,
   compilePathPattern,
