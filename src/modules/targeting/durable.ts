@@ -99,6 +99,15 @@ const resolveAnchor = (root: TargetRoot, anchor: TargetAnchor) => {
     } catch {
       return { status: 'missing' as const };
     }
+    if (
+      anchor.tag === undefined &&
+      anchor.role === undefined &&
+      anchor.accessibleName === undefined &&
+      anchor.attributes.length === 0 &&
+      anchor.childPath === undefined
+    ) {
+      return { status: 'missing' as const };
+    }
   }
 
   if (

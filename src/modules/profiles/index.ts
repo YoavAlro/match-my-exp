@@ -1,4 +1,9 @@
 export {
+  ProfileApplicationError,
+  ProfileApplicationService,
+  type ProfileApplicationResult,
+} from './application';
+export {
   ProfileDraftError,
   ProfileDraftService,
   type ProfileDraftInput,

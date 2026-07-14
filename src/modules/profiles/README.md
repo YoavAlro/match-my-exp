@@ -17,6 +17,7 @@ local extension storage.
 - Reject enabled equal-specificity patterns that can match the same path
 - Compile accepted ephemeral drafts into inspectable durable profile reviews
 - Require explicit overlap resolution before create or replacement
+- Resolve and apply one enabled profile deterministically without an AI request
 
 ## Public API
 
@@ -28,6 +29,10 @@ tests.
 `ProfileDraftService` separates prepare/review from save. Its advanced view
 contains durable locators and declarations but no credentials or hidden
 provider payloads.
+
+`ProfileApplicationService` resolves the current URL, preflights every durable
+target, applies style profiles idempotently, and clears active styles on no
+match or permission loss.
 
 ## Invariants
 

@@ -1,11 +1,18 @@
-import { ProposalOperationSchema, type ProposalOperation } from '../contracts';
+import {
+  ProfileOperationSchema,
+  ProposalOperationSchema,
+  type ProfileOperation,
+  type ProposalOperation,
+} from '../contracts';
 
-type StyleOperation = Extract<ProposalOperation, { kind: 'style' }>;
+type StyleOperation =
+  | Extract<ProposalOperation, { kind: 'style' }>
+  | Extract<ProfileOperation, { kind: 'style' }>;
 type StyleRoot = Document | ShadowRoot;
 
 export interface ResolvedStyleOperation {
   operation: unknown;
-  resolvedElementId: string;
+  resolvedElementId?: string;
   target: Element;
 }
 
@@ -190,12 +197,21 @@ export class StylePreviewRegistry {
     const signatureParts: string[] = [];
 
     for (const input of inputs) {
-      const parsed = ProposalOperationSchema.safeParse(input.operation);
-      if (!parsed.success || parsed.data.kind !== 'style') {
+      const proposal = ProposalOperationSchema.safeParse(input.operation);
+      const profile = ProfileOperationSchema.safeParse(input.operation);
+      const parsed = proposal.success
+        ? proposal.data
+        : profile.success
+          ? profile.data
+          : null;
+      if (parsed === null || parsed.kind !== 'style') {
         throw new StylePreviewError('invalid_style_operation');
       }
-      const operation: StyleOperation = parsed.data;
-      if (operation.target.elementId !== input.resolvedElementId) {
+      const operation: StyleOperation = parsed;
+      if (
+        operation.target.kind === 'ephemeral' &&
+        operation.target.elementId !== input.resolvedElementId
+      ) {
         throw new StylePreviewError('resolved_target_mismatch');
       }
       if (operationIds.has(operation.operationId)) {
