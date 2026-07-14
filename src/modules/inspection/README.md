@@ -14,6 +14,8 @@ ephemeral element references.
 - Assign opaque request-scoped IDs and retain a private element registry
 - Enforce element, text, shadow-depth, and serialized-byte budgets
 - Emit context without query strings or fragments
+- Batch route and added-subtree work while observing discovered open shadow roots
+- Ignore extension-owned style and marker subtrees
 
 ## Public API
 
@@ -21,6 +23,10 @@ ephemeral element references.
 `PageContext` and a private `resolve` method for local ephemeral target lookup.
 Callers supply canonical origin, path, and title from their validated runtime
 context.
+
+`DynamicPageCoordinator` observes the document and each known open shadow root,
+batches relevant work, and exposes explicit navigation and late-shadow hooks to
+the content-script lifecycle adapter.
 
 ## Invariants
 
