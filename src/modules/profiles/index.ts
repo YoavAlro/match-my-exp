@@ -1,4 +1,10 @@
 export {
+  ProfileDraftError,
+  ProfileDraftService,
+  type ProfileDraftInput,
+  type ProfileDraftReview,
+} from './drafts';
+export {
   PathPatternError,
   compareSpecificity,
   compilePathPattern,

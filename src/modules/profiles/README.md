@@ -15,6 +15,8 @@ local extension storage.
 - Preserve previous state when migration, quota, or storage writes fail
 - Compile editable segment wildcards and resolve one profile by specificity
 - Reject enabled equal-specificity patterns that can match the same path
+- Compile accepted ephemeral drafts into inspectable durable profile reviews
+- Require explicit overlap resolution before create or replacement
 
 ## Public API
 
@@ -22,6 +24,10 @@ local extension storage.
 `ChromeProfileStorage` owns the single trusted `chrome.storage.local` key.
 `MemoryProfileStorage` provides deterministic failure and quota behavior for
 tests.
+
+`ProfileDraftService` separates prepare/review from save. Its advanced view
+contains durable locators and declarations but no credentials or hidden
+provider payloads.
 
 ## Invariants
 
