@@ -30,6 +30,10 @@ it never infers behavior from a server response.
 notices. Refusals, malformed responses, cancellation, and unknown failures are
 never retried.
 
+`ProviderSettingsService` owns provider/model configuration, validated key
+replacement, presence-only status, forget, clear-all, and compatible-origin
+reconfirmation.
+
 ## Invariants
 
 - Credentials never enter content messages, settings responses, visible

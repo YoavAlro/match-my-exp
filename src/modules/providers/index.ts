@@ -11,6 +11,12 @@ export {
   type ProviderLifecycleOptions,
   type ProviderRetryNotice,
 } from './lifecycle';
+export {
+  ProviderConfigurationSchema,
+  ProviderSettingsError,
+  ProviderSettingsService,
+  type ProviderConfiguration,
+} from './settings';
 export { AnthropicProvider } from './anthropic';
 export {
   CompatibleProvider,
