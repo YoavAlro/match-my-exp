@@ -18,8 +18,17 @@ provider requests into validated proposals.
 ## Public API
 
 `CredentialVault` owns credential set, status, provider-call read, forget, and
-clear behavior. `OpenAIProvider` implements the first proposal adapter over the
-Responses API. Fetch and storage are injectable for deterministic tests.
+clear behavior. `OpenAIProvider`, `AnthropicProvider`, and `GeminiProvider`
+normalize their official direct APIs. Fetch and storage are injectable for
+deterministic tests.
+
+`CompatibleProvider` requires an explicit canonical endpoint, model,
+authentication mode, structured-output dialect, and `store: false` capability;
+it never infers behavior from a server response.
+
+`withProviderLifecycle` normalizes bounded transient retries with visible retry
+notices. Refusals, malformed responses, cancellation, and unknown failures are
+never retried.
 
 ## Invariants
 
