@@ -10,6 +10,11 @@ export {
   type ProfileDraftReview,
 } from './drafts';
 export {
+  ProfileHealthService,
+  type SettledApplicationOptions,
+  type SettledApplicationResult,
+} from './health';
+export {
   PathPatternError,
   compareSpecificity,
   compilePathPattern,

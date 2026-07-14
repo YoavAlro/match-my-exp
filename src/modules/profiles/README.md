@@ -18,6 +18,8 @@ local extension storage.
 - Compile accepted ephemeral drafts into inspectable durable profile reviews
 - Require explicit overlap resolution before create or replacement
 - Resolve and apply one enabled profile deterministically without an AI request
+- Retry bounded settling, distinguish navigation interruption, and disable
+  genuine drift with bounded diagnostics
 
 ## Public API
 
@@ -33,6 +35,10 @@ provider payloads.
 `ProfileApplicationService` resolves the current URL, preflights every durable
 target, applies style profiles idempotently, and clears active styles on no
 match or permission loss.
+
+`ProfileHealthService` retries only missing dynamic targets within a bounded
+settling window. Navigation interrupts without health changes; settled failure
+creates one disabled `needs-repair` revision.
 
 ## Invariants
 
