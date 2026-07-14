@@ -13,6 +13,8 @@ retaining extracted page context or hidden provider payloads.
 - Delete one conversation or all conversation history
 - Migrate copied state only after complete validation
 - Preserve previous state after quota, interruption, or migration failure
+- Orchestrate clarification, proposal preview, keep, undo, discard, and stale
+  invalidation without persisting hidden payloads
 
 ## Public API
 
@@ -20,6 +22,9 @@ retaining extracted page context or hidden provider payloads.
 behavior over a `ConversationStorageAdapter`. `IndexedDbConversationStorage`
 stores one atomic state record. `MemoryConversationStorage` provides deterministic
 quota and failure behavior for tests.
+
+`ProposalWorkflow` coordinates one styling draft over injected inspection,
+provider, transform, current-document, and conversation boundaries.
 
 ## Invariants
 
@@ -29,6 +34,10 @@ quota and failure behavior for tests.
 - Strict schemas reject credentials, minimized DOM, hidden prompts, provider
   envelopes, unknown fields, and unrelated records.
 - Storage replacement occurs only after complete aggregate validation.
+- A model turn must validate and preview before it can join the draft.
+- Clarifications contain no operations, and unsupported rich operations never
+  reach execution in M1.
+- Navigation or tab invalidation rolls back every active draft preview.
 
 ## Dependencies
 

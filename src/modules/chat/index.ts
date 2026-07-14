@@ -10,3 +10,9 @@ export {
   MemoryConversationStorage,
   type ConversationStorageAdapter,
 } from './storage';
+export {
+  ProposalWorkflow,
+  ProposalWorkflowError,
+  type ProposalWorkflowOptions,
+  type WorkflowState,
+} from './workflow';
