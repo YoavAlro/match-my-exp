@@ -34,6 +34,8 @@ export const installProfileRegistrations = (api: BrowserRegistrationApi) => {
       void reconcile();
     }
   });
+  api.permissions.onRemoved.addListener(() => void reconcile());
+  api.permissions.onAdded.addListener(() => void reconcile());
   void reconcile();
   return reconcile;
 };

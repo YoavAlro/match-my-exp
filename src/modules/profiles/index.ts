@@ -30,6 +30,7 @@ export {
   type CompiledPathPattern,
   type ProfileResolution,
 } from './matching';
+export { ProfileManagementService } from './management';
 export {
   ProfileRepository,
   ProfileRepositoryError,

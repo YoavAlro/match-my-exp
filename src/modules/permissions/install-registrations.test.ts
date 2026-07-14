@@ -46,7 +46,11 @@ describe('installProfileRegistrations', () => {
         registerContentScripts: vi.fn().mockResolvedValue(undefined),
         unregisterContentScripts: vi.fn().mockResolvedValue(undefined),
       },
-      permissions: { contains: vi.fn().mockResolvedValue(false) },
+      permissions: {
+        contains: vi.fn().mockResolvedValue(false),
+        onRemoved: { addListener: vi.fn() },
+        onAdded: { addListener: vi.fn() },
+      },
     };
 
     const reconcile = installProfileRegistrations(

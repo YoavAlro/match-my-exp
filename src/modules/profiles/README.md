@@ -22,6 +22,8 @@ local extension storage.
   genuine drift with bounded diagnostics
 - Offer explicit user-initiated repair through the normal durable review and
   revision path
+- List inspectable profile summaries and coordinate disable, delete, and origin
+  revocation with reachable rollback
 
 ## Public API
 
@@ -45,6 +47,10 @@ creates one disabled `needs-repair` revision.
 `ProfileRepairService` discloses the selected provider destination, proposes only
 after an explicit user call, preserves rejected disabled revisions, and accepts
 repairs as healthy new revisions.
+
+`ProfileManagementService` exposes origin/path/effect summaries and ensures
+disable, delete, or revocation clears reachable styles before durable state or
+permission changes.
 
 ## Invariants
 
