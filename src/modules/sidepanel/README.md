@@ -14,7 +14,7 @@ Present the extension's accessible user interface inside Chrome's side panel.
 ## Public API
 
 `index.ts` exports the `SidePanel` React component and injectable
-`ReadinessLoader` boundary.
+`ReadinessLoader` and `SiteAccessRequester` boundaries.
 
 ## Data Ownership
 
@@ -31,7 +31,8 @@ credentials, permissions, and page state belong to their respective modules.
 ## Dependencies
 
 The component depends on React and public coordination contracts. It requests
-only active-tab readiness metadata and never reads page context directly.
+only active-tab readiness metadata and explicit origin access. It never reads
+page context directly.
 
 ## Failure Behavior
 

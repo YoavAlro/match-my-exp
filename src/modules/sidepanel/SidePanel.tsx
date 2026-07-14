@@ -4,8 +4,14 @@ import {
   PanelReadinessResponseSchema,
   type PanelReadinessResponse,
 } from '../contracts';
+import {
+  ChromeConsentStorage,
+  SiteAccessService,
+  type AccessResult,
+} from '../permissions';
 
 export type ReadinessLoader = () => Promise<PanelReadinessResponse>;
+export type SiteAccessRequester = (pageUrl: string) => Promise<AccessResult>;
 
 const unavailableResponse = (): PanelReadinessResponse => ({
   schemaVersion: 1,
@@ -32,6 +38,31 @@ const loadBrowserReadiness: ReadinessLoader = async () => {
   );
 };
 
+const requestBrowserSiteAccess: SiteAccessRequester = async (pageUrl) => {
+  if (typeof browser === 'undefined') {
+    return { status: 'unsupported' };
+  }
+  const service = new SiteAccessService(
+    {
+      contains: (originPattern) =>
+        browser.permissions.contains({ origins: [originPattern] }),
+      request: (originPattern) =>
+        browser.permissions.request({ origins: [originPattern] }),
+      remove: (originPattern) =>
+        browser.permissions.remove({ origins: [originPattern] }),
+    },
+    new ChromeConsentStorage(browser.storage.local),
+  );
+  return service.request(
+    pageUrl,
+    { id: 'openai', origin: 'https://api.openai.com' },
+    async ({ pageOrigin, provider, data }) =>
+      window.confirm(
+        `Allow Match My Exp to send ${data.join(', ')} from ${pageOrigin} to ${provider.origin}?`,
+      ),
+  );
+};
+
 const readinessText = (readiness: PanelReadinessResponse | null) => {
   if (readiness === null) {
     return 'Checking current site';
@@ -47,12 +78,15 @@ const readinessText = (readiness: PanelReadinessResponse | null) => {
 
 export function SidePanel({
   loadReadiness = loadBrowserReadiness,
+  requestSiteAccess = requestBrowserSiteAccess,
 }: {
   loadReadiness?: ReadinessLoader;
+  requestSiteAccess?: SiteAccessRequester;
 }) {
   const [readiness, setReadiness] = useState<PanelReadinessResponse | null>(
     null,
   );
+  const [access, setAccess] = useState<AccessResult | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -71,6 +105,24 @@ export function SidePanel({
       active = false;
     };
   }, [loadReadiness]);
+
+  const pageUrl =
+    readiness?.readiness === 'ready' &&
+    readiness.origin !== null &&
+    readiness.path !== null
+      ? `${readiness.origin}${readiness.path}`
+      : null;
+
+  const grantSiteAccess = async () => {
+    if (pageUrl === null) {
+      return;
+    }
+    try {
+      setAccess(await requestSiteAccess(pageUrl));
+    } catch {
+      setAccess({ status: 'denied', pageOrigin: readiness?.origin ?? pageUrl });
+    }
+  };
 
   return (
     <main className="shell">
@@ -92,6 +144,15 @@ export function SidePanel({
           capability is completed.
         </p>
         <p role="status">{readinessText(readiness)}</p>
+        {pageUrl !== null && access?.status !== 'ready' ? (
+          <button type="button" onClick={() => void grantSiteAccess()}>
+            Grant site access
+          </button>
+        ) : null}
+        {access?.status === 'ready' ? <p>Site access granted</p> : null}
+        {access?.status === 'denied' ? (
+          <p>Site access was not granted</p>
+        ) : null}
       </section>
 
       <footer className="status">

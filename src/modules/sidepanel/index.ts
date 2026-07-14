@@ -1,1 +1,5 @@
-export { SidePanel, type ReadinessLoader } from './SidePanel';
+export {
+  SidePanel,
+  type ReadinessLoader,
+  type SiteAccessRequester,
+} from './SidePanel';

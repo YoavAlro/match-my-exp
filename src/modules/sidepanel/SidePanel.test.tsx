@@ -1,6 +1,7 @@
 import axe from 'axe-core';
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 import { SidePanel } from './SidePanel';
 
 describe('SidePanel', () => {
@@ -50,6 +51,40 @@ describe('SidePanel', () => {
       'No active page available',
     );
     expect(screen.queryByText('private failure')).not.toBeInTheDocument();
+  });
+
+  it('grants access only after an explicit ready-site action', async () => {
+    const requestSiteAccess = vi.fn().mockResolvedValue({
+      status: 'ready',
+      pageOrigin: 'https://example.com',
+    });
+    render(
+      <SidePanel
+        loadReadiness={async () => ({
+          schemaVersion: 1,
+          type: 'panel.readiness.response',
+          requestId: '00000000-0000-4000-8000-000000000001',
+          readiness: 'ready',
+          tabId: 7,
+          origin: 'https://example.com',
+          path: '/account',
+          epoch: 1,
+        })}
+        requestSiteAccess={requestSiteAccess}
+      />,
+    );
+
+    await userEvent.click(
+      await screen.findByRole('button', { name: 'Grant site access' }),
+    );
+
+    expect(requestSiteAccess).toHaveBeenCalledWith(
+      'https://example.com/account',
+    );
+    expect(await screen.findByText('Site access granted')).toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Grant site access' }),
+    ).not.toBeInTheDocument();
   });
 
   it('has no detectable accessibility violations', async () => {
