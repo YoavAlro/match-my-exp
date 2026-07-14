@@ -36,6 +36,15 @@ export {
   type Proposal,
 } from './proposal';
 export {
+  CanonicalOriginSchema,
+  ContractVersionSchema,
+  DateTimeSchema,
+  EntityIdSchema,
+  OperationIdSchema,
+  PagePathSchema,
+  PathPatternSchema,
+} from './shared';
+export {
   DurableTargetSchema,
   EphemeralTargetSchema,
   TargetAnchorSchema,
