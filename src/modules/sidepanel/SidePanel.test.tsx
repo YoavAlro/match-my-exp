@@ -16,6 +16,42 @@ describe('SidePanel', () => {
     expect(screen.getByText('Local-first by design')).toBeInTheDocument();
   });
 
+  it('shows current-site readiness without page content', async () => {
+    render(
+      <SidePanel
+        loadReadiness={async () => ({
+          schemaVersion: 1,
+          type: 'panel.readiness.response',
+          requestId: '00000000-0000-4000-8000-000000000001',
+          readiness: 'ready',
+          tabId: 7,
+          origin: 'https://example.com',
+          path: '/account',
+          epoch: 1,
+        })}
+      />,
+    );
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'Ready for https://example.com/account',
+    );
+  });
+
+  it('fails closed when readiness cannot be loaded', async () => {
+    render(
+      <SidePanel
+        loadReadiness={async () => {
+          throw new Error('private failure');
+        }}
+      />,
+    );
+
+    expect(await screen.findByRole('status')).toHaveTextContent(
+      'No active page available',
+    );
+    expect(screen.queryByText('private failure')).not.toBeInTheDocument();
+  });
+
   it('has no detectable accessibility violations', async () => {
     const { container } = render(<SidePanel />);
     const results = await axe.run(container, {

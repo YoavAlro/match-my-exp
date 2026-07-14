@@ -16,8 +16,9 @@ between extension runtime components.
 ## Public API
 
 `index.ts` exports Zod schemas and their inferred TypeScript types for page
-context, targets, operations, proposals, profiles, and runtime messages. It also
-exports profile health and revision schemas. `ProposalJsonSchema` is the full
+context, targets, operations, proposals, profiles, coordination, and runtime
+messages. It also exports profile health and revision schemas.
+`ProposalJsonSchema` is the full
 Draft 2020-12 representation. `ProposalProviderJsonSchema` is a portable subset
 for OpenAI, Anthropic, Gemini, and compatible provider adapters.
 
