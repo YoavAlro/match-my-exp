@@ -28,7 +28,7 @@ export const CompatibleProviderConfigSchema = z.strictObject({
     .min(1)
     .max(100)
     .regex(/^[a-zA-Z0-9._:-]+$/),
-  authentication: z.enum(['bearer', 'x-api-key']),
+  authentication: z.enum(['bearer', 'x-api-key', 'api-key']),
   structuredOutput: z.literal('openai-responses-json-schema'),
   storeFalse: z.literal(true),
 });
@@ -63,7 +63,7 @@ export class CompatibleProvider {
       'content-type': 'application/json',
       [this.#config.authentication === 'bearer'
         ? 'authorization'
-        : 'x-api-key']:
+        : this.#config.authentication]:
         this.#config.authentication === 'bearer'
           ? `Bearer ${credential}`
           : credential,

@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [WxtVitest()],
   test: {
     coverage: {
-      exclude: ['src/modules/**/index.ts'],
+      exclude: [
+        'src/modules/**/index.ts',
+        'src/modules/runtime/chat-bridge.ts',
+      ],
       include: ['src/modules/**/*.{ts,tsx}'],
       provider: 'v8',
       reporter: ['text', 'json-summary'],

@@ -1,3 +1,4 @@
+export { installPanelChatBridge } from './chat-bridge';
 export {
   ActiveTabCoordinator,
   MAX_RUNTIME_MESSAGE_BYTES,

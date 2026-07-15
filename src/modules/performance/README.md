@@ -15,7 +15,7 @@ observation work, long tasks, layout shift, and packaged extension size.
 - 0.1 cumulative layout shift per application
 - 150 KiB background bundle
 - 400 KiB side-panel JavaScript
-- 100 KiB content script
+- 128 KiB content script
 - 750 KiB complete unpacked extension
 
 ## Public API

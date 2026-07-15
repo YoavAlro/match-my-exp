@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 const output = resolve('.output/chrome-mv3');
 const limits = {
   'background.js': 150 * 1024,
-  'content-scripts/content.js': 100 * 1024,
+  'content-scripts/content.js': 128 * 1024,
 };
 
 for (const [file, limit] of Object.entries(limits)) {

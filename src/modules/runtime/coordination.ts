@@ -201,11 +201,7 @@ export class ActiveTabCoordinator {
   }
 
   isTrustedPanelSender(sender: RuntimeSender) {
-    if (
-      sender.id !== this.#extensionId ||
-      sender.tab !== undefined ||
-      sender.url === undefined
-    ) {
+    if (sender.id !== this.#extensionId || sender.url === undefined) {
       return false;
     }
     try {

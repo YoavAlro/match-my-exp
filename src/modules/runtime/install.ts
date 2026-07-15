@@ -31,27 +31,41 @@ const tabSnapshot = (
   };
 };
 
-export const installRuntimeCoordination = (api: BrowserRuntimeApi) => {
+export const installRuntimeCoordination = (
+  api: BrowserRuntimeApi,
+  existingCoordinator?: ActiveTabCoordinator,
+) => {
   const extensionBaseUrl = api.runtime.getURL('/');
-  const coordinator = new ActiveTabCoordinator(
-    api.runtime.id,
-    extensionBaseUrl,
-  );
+  const coordinator =
+    existingCoordinator ??
+    new ActiveTabCoordinator(api.runtime.id, extensionBaseUrl);
 
-  api.runtime.onMessage.addListener((message, sender) =>
-    handlePanelReadinessRequest(
+  api.runtime.onMessage.addListener((message, sender) => {
+    if (
+      message === null ||
+      typeof message !== 'object' ||
+      !('type' in message) ||
+      message.type !== 'panel.readiness.request'
+    ) {
+      return undefined;
+    }
+    return handlePanelReadinessRequest(
       message,
       senderSnapshot(sender),
       coordinator,
       async () => {
-        const [tab] = await api.tabs.query({
+        const [activeTab] = await api.tabs.query({
           active: true,
           currentWindow: true,
         });
-        return tabSnapshot(tab);
+        if (activeTab?.url?.startsWith('https://')) {
+          return tabSnapshot(activeTab);
+        }
+        const tabs = await api.tabs.query({ currentWindow: true });
+        return tabSnapshot(tabs.find((tab) => tab.url?.startsWith('https://')));
       },
-    ),
-  );
+    );
+  });
   api.tabs.onActivated.addListener(() => coordinator.invalidate());
   api.tabs.onUpdated.addListener((tabId, change) => {
     if (change.url !== undefined || change.status === 'loading') {

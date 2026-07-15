@@ -23,7 +23,8 @@
     "benchmark:targeting:smoke": "tsx benchmarks/targeting/smoke.ts",
     "budget:check": "node scripts/check-build-budgets.mjs",
     "security:check": "node scripts/audit-extension.mjs",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run benchmark:targeting:smoke && npm run test:coverage && npm run build && npm run budget:check && npm run security:check && npm run audit:production",
+    "test:packed": "node scripts/test-packed-extension.mjs",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run benchmark:targeting:smoke && npm run test:coverage && npm run build && npm run test:packed && npm run budget:check && npm run security:check && npm run audit:production",
     "postinstall": "wxt prepare"
   },
   "dependencies": {

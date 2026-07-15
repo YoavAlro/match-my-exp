@@ -6,6 +6,12 @@ export {
   type PanelReadinessResponse,
   type SiteReadiness,
 } from './coordination';
+export {
+  PanelChatCommandSchema,
+  PanelChatResponseSchema,
+  type PanelChatCommand,
+  type PanelChatResponse,
+} from './panel-chat';
 export { RuntimeMessageSchema, type RuntimeMessage } from './messages';
 export {
   ProfileOperationSchema,

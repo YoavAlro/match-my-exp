@@ -80,11 +80,80 @@ describe('SidePanel', () => {
 
     expect(requestSiteAccess).toHaveBeenCalledWith(
       'https://example.com/account',
+      { id: 'openai', origin: 'https://api.openai.com' },
     );
     expect(await screen.findByText('Site access granted')).toBeInTheDocument();
     expect(
       screen.queryByRole('button', { name: 'Grant site access' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('configures a provider and drives preview controls', async () => {
+    const configureProvider = vi.fn().mockResolvedValue(undefined);
+    const sendPanelCommand = vi
+      .fn()
+      .mockResolvedValueOnce({
+        schemaVersion: 1,
+        type: 'panel.chat.response',
+        requestId: '00000000-0000-4000-8000-000000000010',
+        status: 'preview',
+        assistantMessage: 'Preview ready',
+        previewId: '00000000-0000-4000-8000-000000000011',
+        clarificationQuestion: null,
+        clarificationChoices: [],
+      })
+      .mockResolvedValueOnce({
+        schemaVersion: 1,
+        type: 'panel.chat.response',
+        requestId: '00000000-0000-4000-8000-000000000012',
+        status: 'discarded',
+        assistantMessage: '',
+        previewId: '00000000-0000-4000-8000-000000000011',
+        clarificationQuestion: null,
+        clarificationChoices: [],
+      });
+    render(
+      <SidePanel
+        loadReadiness={async () => ({
+          schemaVersion: 1,
+          type: 'panel.readiness.response',
+          requestId: '00000000-0000-4000-8000-000000000001',
+          readiness: 'ready',
+          tabId: 7,
+          origin: 'https://example.com',
+          path: '/account',
+          epoch: 1,
+        })}
+        requestSiteAccess={async () => ({
+          status: 'ready',
+          pageOrigin: 'https://example.com',
+        })}
+        configureProvider={configureProvider}
+        sendPanelCommand={sendPanelCommand}
+      />,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      await screen.findByRole('button', { name: 'Grant site access' }),
+    );
+    await user.type(
+      screen.getByLabelText('API key', { exact: true }),
+      'sk-test',
+    );
+    await user.click(screen.getByRole('button', { name: 'Save provider' }));
+    expect(configureProvider).toHaveBeenCalledWith({
+      configuration: { provider: 'openai', model: 'gpt-5' },
+      credential: 'sk-test',
+    });
+
+    await user.type(
+      await screen.findByLabelText('Describe the change'),
+      'Increase contrast',
+    );
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+    expect(await screen.findByText('Preview ready')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Discard preview' }));
+    expect(sendPanelCommand).toHaveBeenCalledTimes(2);
   });
 
   it('has no detectable accessibility violations', async () => {

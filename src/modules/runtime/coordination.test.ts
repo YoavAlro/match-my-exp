@@ -97,7 +97,6 @@ describe('ActiveTabCoordinator', () => {
     for (const sender of [
       { ...panelSender, id: 'other-extension' },
       { ...panelSender, url: `${extensionOrigin}/options.html` },
-      { ...panelSender, tab: { id: 1 } },
     ]) {
       expect(
         await handlePanelReadinessRequest(
