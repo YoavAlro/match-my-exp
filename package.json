@@ -10,6 +10,7 @@
     "build": "wxt build",
     "build:firefox": "wxt build -b firefox",
     "zip": "wxt zip",
+    "package:store": "npm run build && node scripts/package-store-extension.mjs",
     "zip:firefox": "wxt zip -b firefox",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
@@ -24,7 +25,7 @@
     "budget:check": "node scripts/check-build-budgets.mjs",
     "security:check": "node scripts/audit-extension.mjs",
     "test:packed": "node scripts/test-packed-extension.mjs",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run benchmark:targeting:smoke && npm run test:coverage && npm run build && npm run test:packed && npm run budget:check && npm run security:check && npm run audit:production",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run benchmark:targeting:smoke && npm run test:coverage && npm run package:store && npm run test:packed && npm run budget:check && npm run security:check && npm run audit:production",
     "postinstall": "wxt prepare"
   },
   "dependencies": {

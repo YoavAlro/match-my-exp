@@ -12,7 +12,7 @@ locally.
 ## Description
 
 Match My Exp is a personal web layer for people who repeatedly encounter a
-website experience that does not fit how they see, focus, navigate, or interact.
+website experience whose visual presentation does not fit their needs.
 
 Describe the change you want in the Chrome side panel. The extension sends a
 minimized semantic representation of the current page to your selected AI
@@ -20,8 +20,8 @@ provider, validates the response, and previews reversible declarative changes.
 Nothing is saved until you approve it.
 
 Approved profiles reapply locally on matching pages without another AI request.
-You can inspect effects, undo previews, disable or delete profiles, revoke site
-access, delete chat history, and forget provider credentials.
+You can undo a preview before keeping it and revoke site access through Chrome's
+extension settings to stop future application.
 
 ### Local-first and BYOK
 

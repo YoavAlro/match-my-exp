@@ -23,11 +23,12 @@ package.
 4. Choose **Grant site access** and review the exact page-data categories and
    provider destination.
 5. Enter the supplied styling request.
-6. Inspect the assistant summary and exact proposed style declarations.
+6. Inspect the assistant summary and visible preview result.
 7. Preview the change, then discard it and confirm full rollback.
-8. Repeat, keep the preview, save the profile, reload, and confirm deterministic
-   reapplication without a provider request.
-9. Disable, delete, and revoke the profile; confirm future access stops.
+8. Repeat, keep the preview, reload, and confirm deterministic reapplication
+   without a provider request.
+9. Remove the site permission in Chrome's extension settings; confirm the active
+   change rolls back and future reloads do not reapply it.
 
 ## Failure Flow
 
