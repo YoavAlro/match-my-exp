@@ -41,5 +41,6 @@ jobs:
           path: |
             .output/packed-artifacts
             .output/*-chrome-store.zip
+          include-hidden-files: true
           if-no-files-found: ignore
           retention-days: 7
