@@ -73,4 +73,6 @@ missing preview is an idempotent false result.
 Tests cover exact scoping, document and shadow roots, idempotence, replacement,
 rollback, disconnected targets, duplicate writes, excessive output, unsupported
 CSS, generated content, URLs, executable syntax, priority injection, and
-preservation of unrelated page state.
+preservation of unrelated page state. A representative integrated fixture covers
+focus order, names, roles, landmarks, live regions, shortcuts, automated axe
+checks, and mixed rollback.
