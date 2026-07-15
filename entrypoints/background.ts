@@ -1,6 +1,7 @@
 import {
   ActiveTabCoordinator,
   installPanelChatBridge,
+  installProfileBridge,
   installRuntimeCoordination,
 } from '@/src/modules/runtime';
 import { installProfileRegistrations } from '@/src/modules/permissions';
@@ -11,6 +12,7 @@ export default defineBackground(() => {
     browser.runtime.getURL('/'),
   );
   installPanelChatBridge(browser, coordinator);
+  installProfileBridge(browser);
   installRuntimeCoordination(browser, coordinator);
   installProfileRegistrations(browser);
 

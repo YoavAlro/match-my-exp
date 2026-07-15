@@ -67,12 +67,12 @@ const requestBrowserSiteAccess: SiteAccessRequester = async (
   }
   const service = new SiteAccessService(
     {
-      contains: (originPattern) =>
-        browser.permissions.contains({ origins: [originPattern] }),
-      request: (originPattern) =>
-        browser.permissions.request({ origins: [originPattern] }),
-      remove: (originPattern) =>
-        browser.permissions.remove({ origins: [originPattern] }),
+      contains: (originPatterns) =>
+        browser.permissions.contains({ origins: [...originPatterns] }),
+      request: (originPatterns) =>
+        browser.permissions.request({ origins: [...originPatterns] }),
+      remove: (originPatterns) =>
+        browser.permissions.remove({ origins: [...originPatterns] }),
     },
     new ChromeConsentStorage(browser.storage.local),
   );
@@ -163,23 +163,44 @@ export function SidePanel({
   const [providerReady, setProviderReady] = useState(false);
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState<PanelChatResponse | null>(null);
+  const [previewIntent, setPreviewIntent] = useState('');
   const [busy, setBusy] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
-    void loadReadiness()
-      .then((result) => {
-        if (active) {
-          setReadiness(result);
-        }
-      })
-      .catch(() => {
-        if (active) {
-          setReadiness(unavailableResponse());
-        }
-      });
+    const refresh = () => {
+      void loadReadiness()
+        .then((result) => {
+          if (active) {
+            setReadiness(result);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setReadiness(unavailableResponse());
+          }
+        });
+    };
+    const pageChanged = () => {
+      setAccess(null);
+      setChat(null);
+      setPreviewIntent('');
+      refresh();
+    };
+    refresh();
+    const refreshInterval = window.setInterval(refresh, 1_000);
+    if (typeof browser !== 'undefined') {
+      browser.tabs.onActivated.addListener(pageChanged);
+      browser.tabs.onUpdated.addListener(pageChanged);
+    }
     return () => {
       active = false;
+      window.clearInterval(refreshInterval);
+      if (typeof browser !== 'undefined') {
+        browser.tabs.onActivated.removeListener(pageChanged);
+        browser.tabs.onUpdated.removeListener(pageChanged);
+      }
     };
   }, [loadReadiness]);
 
@@ -194,10 +215,12 @@ export function SidePanel({
     if (pageUrl === null) {
       return;
     }
+    setErrorMessage(null);
     try {
       setAccess(await requestSiteAccess(pageUrl, providerDestination));
     } catch {
       setAccess({ status: 'denied', pageOrigin: readiness?.origin ?? pageUrl });
+      setErrorMessage('Site access could not be granted.');
     }
   };
 
@@ -231,30 +254,41 @@ export function SidePanel({
           }
         : { provider, model };
     setBusy(true);
+    setErrorMessage(null);
     try {
       await configureProvider({ configuration, credential });
       setCredential('');
       setProviderReady(true);
+    } catch {
+      setErrorMessage(
+        'Provider setup failed. Check the settings and try again.',
+      );
     } finally {
       setBusy(false);
     }
   };
 
   const submitChat = async () => {
-    if (message.trim().length === 0) {
+    const intent = message.trim();
+    if (intent.length === 0) {
       return;
     }
     setBusy(true);
+    setErrorMessage(null);
     try {
-      setChat(
-        await sendPanelCommand({
-          schemaVersion: 1,
-          type: 'panel.chat.submit',
-          requestId: crypto.randomUUID(),
-          message: message.trim(),
-        }),
-      );
+      const response = await sendPanelCommand({
+        schemaVersion: 1,
+        type: 'panel.chat.submit',
+        requestId: crypto.randomUUID(),
+        message: intent,
+      });
+      setChat(response);
+      setPreviewIntent(response.status === 'preview' ? intent : '');
       setMessage('');
+    } catch {
+      setErrorMessage(
+        'The request did not complete because the page or provider changed.',
+      );
     } finally {
       setBusy(false);
     }
@@ -265,15 +299,27 @@ export function SidePanel({
       return;
     }
     setBusy(true);
+    setErrorMessage(null);
     try {
+      const base = {
+        schemaVersion: 1 as const,
+        requestId: crypto.randomUUID(),
+        previewId: chat.previewId,
+      };
       setChat(
-        await sendPanelCommand({
-          schemaVersion: 1,
-          type: `panel.preview.${action}`,
-          requestId: crypto.randomUUID(),
-          previewId: chat.previewId,
-        }),
+        await sendPanelCommand(
+          action === 'keep'
+            ? {
+                ...base,
+                type: 'panel.preview.keep',
+                intent: previewIntent,
+              }
+            : { ...base, type: 'panel.preview.discard' },
+        ),
       );
+      setPreviewIntent('');
+    } catch {
+      setErrorMessage('The preview is no longer available.');
     } finally {
       setBusy(false);
     }
@@ -299,6 +345,7 @@ export function SidePanel({
           capability is completed.
         </p>
         <p role="status">{readinessText(readiness)}</p>
+        {errorMessage === null ? null : <p role="alert">{errorMessage}</p>}
         {pageUrl !== null && access?.status !== 'ready' ? (
           <button type="button" onClick={() => void grantSiteAccess()}>
             Grant site access
@@ -319,6 +366,8 @@ export function SidePanel({
                   event.target.value as ProviderConfiguration['provider'],
                 );
                 setProviderReady(false);
+                setAccess(null);
+                setChat(null);
               }}
             >
               <option value="compatible">OpenAI-compatible</option>
@@ -341,7 +390,12 @@ export function SidePanel({
                 <input
                   type="url"
                   value={endpoint}
-                  onChange={(event) => setEndpoint(event.target.value)}
+                  onChange={(event) => {
+                    setEndpoint(event.target.value);
+                    setProviderReady(false);
+                    setAccess(null);
+                    setChat(null);
+                  }}
                 />
               </label>
               <label>

@@ -13,6 +13,7 @@ export const PanelChatCommandSchema = z.discriminatedUnion('type', [
     type: z.literal('panel.preview.keep'),
     requestId: EntityIdSchema,
     previewId: EntityIdSchema,
+    intent: z.string().min(1).max(1_000),
   }),
   z.strictObject({
     schemaVersion: ContractVersionSchema,

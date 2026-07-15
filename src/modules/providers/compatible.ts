@@ -49,7 +49,7 @@ export class CompatibleProvider {
   ) {
     this.#vault = vault;
     this.#config = CompatibleProviderConfigSchema.parse(config);
-    this.#fetch = fetchImplementation;
+    this.#fetch = fetchImplementation.bind(globalThis);
   }
 
   async propose(request: {

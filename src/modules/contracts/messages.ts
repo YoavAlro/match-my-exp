@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { ProfileOperationSchema, ProposalOperationSchema } from './operations';
 import { PageContextSchema } from './page-context';
+import { ProfileSchema } from './profile';
 import {
   CanonicalOriginSchema,
   ContractVersionSchema,
@@ -75,10 +76,43 @@ export const RuntimeMessageSchema = z.discriminatedUnion('type', [
   z.strictObject({
     ...MessageBaseShape,
     ...PageIdentityShape,
+    type: z.literal('profile.compile.request'),
+    previewId: EntityIdSchema,
+  }),
+  z.strictObject({
+    ...MessageBaseShape,
+    type: z.literal('profile.compile.response'),
+    previewId: EntityIdSchema,
+    operations: ProfileOperationListSchema,
+  }),
+  z.strictObject({
+    ...MessageBaseShape,
+    ...PageIdentityShape,
+    type: z.literal('profile.resolve.request'),
+  }),
+  z.strictObject({
+    ...MessageBaseShape,
+    type: z.literal('profile.resolve.response'),
+    profile: ProfileSchema.nullable(),
+  }),
+  z.strictObject({
+    ...MessageBaseShape,
+    ...PageIdentityShape,
     type: z.literal('profile.apply'),
     profileId: EntityIdSchema,
     revision: z.number().int().safe().positive(),
     operations: ProfileOperationListSchema,
+  }),
+  z.strictObject({
+    ...MessageBaseShape,
+    type: z.literal('profile.apply.response'),
+    profileId: EntityIdSchema,
+    revision: z.number().int().safe().positive(),
+  }),
+  z.strictObject({
+    ...MessageBaseShape,
+    type: z.literal('profile.clear'),
+    expectedOrigin: CanonicalOriginSchema,
   }),
 ]);
 

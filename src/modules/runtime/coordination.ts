@@ -171,6 +171,16 @@ export class ActiveTabCoordinator {
     };
   }
 
+  isCurrent(context: PageRequestContext) {
+    return (
+      context.epoch === this.#epoch &&
+      this.#active.readiness === 'ready' &&
+      this.#active.tabId === context.tabId &&
+      this.#active.origin === context.origin &&
+      this.#active.path === context.path
+    );
+  }
+
   validateContentResponse(
     raw: unknown,
     sender: RuntimeSender,

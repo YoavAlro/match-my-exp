@@ -51,9 +51,9 @@ export class ChromeConsentStorage implements ConsentStorage {
 }
 
 export interface HostPermissionAdapter {
-  contains(originPattern: string): Promise<boolean>;
-  request(originPattern: string): Promise<boolean>;
-  remove(originPattern: string): Promise<boolean>;
+  contains(originPatterns: readonly string[]): Promise<boolean>;
+  request(originPatterns: readonly string[]): Promise<boolean>;
+  remove(originPatterns: readonly string[]): Promise<boolean>;
 }
 
 export interface DisclosureRequest {
@@ -96,8 +96,9 @@ export class SiteAccessService {
       return { status: 'unsupported' };
     }
     const provider = ProviderDestinationSchema.parse(providerInput);
+    const origins = requiredOrigins(parsed, provider.origin);
     const [permission, records] = await Promise.all([
-      this.#permissions.contains(originPattern(parsed)),
+      this.#permissions.contains(origins),
       this.#consents.read(),
     ]);
     return permission && hasConsent(records, parsed, provider)
@@ -132,7 +133,9 @@ export class SiteAccessService {
     if (!confirmed) {
       return { status: 'denied', pageOrigin };
     }
-    const granted = await this.#permissions.request(originPattern(pageOrigin));
+    const granted = await this.#permissions.request(
+      requiredOrigins(pageOrigin, provider.origin),
+    );
     if (!granted) {
       return { status: 'denied', pageOrigin };
     }
@@ -158,7 +161,7 @@ export class SiteAccessService {
     if (pageOrigin === null) {
       return false;
     }
-    const removed = await this.#permissions.remove(originPattern(pageOrigin));
+    const removed = await this.#permissions.remove([originPattern(pageOrigin)]);
     const records = await this.#consents.read();
     await this.#consents.write(
       records.filter((record) => record.pageOrigin !== pageOrigin),
@@ -193,6 +196,10 @@ const hasConsent = (
   );
 
 const originPattern = (origin: string) => `${origin}/*`;
+
+const requiredOrigins = (pageOrigin: string, providerOrigin: string) => [
+  ...new Set([originPattern(pageOrigin), originPattern(providerOrigin)]),
+];
 
 const parsePageOrigin = (pageUrl: string) => {
   try {

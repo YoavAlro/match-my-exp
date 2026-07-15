@@ -8,25 +8,25 @@ import {
 
 class MemoryPermissions implements HostPermissionAdapter {
   readonly origins = new Set<string>();
-  grantRequests: string[] = [];
-  removals: string[] = [];
+  grantRequests: string[][] = [];
+  removals: string[][] = [];
   allowRequest = true;
 
-  async contains(originPattern: string) {
-    return this.origins.has(originPattern);
+  async contains(originPatterns: readonly string[]) {
+    return originPatterns.every((origin) => this.origins.has(origin));
   }
 
-  async request(originPattern: string) {
-    this.grantRequests.push(originPattern);
+  async request(originPatterns: readonly string[]) {
+    this.grantRequests.push([...originPatterns]);
     if (this.allowRequest) {
-      this.origins.add(originPattern);
+      originPatterns.forEach((origin) => this.origins.add(origin));
     }
     return this.allowRequest;
   }
 
-  async remove(originPattern: string) {
-    this.removals.push(originPattern);
-    return this.origins.delete(originPattern);
+  async remove(originPatterns: readonly string[]) {
+    this.removals.push([...originPatterns]);
+    return originPatterns.some((origin) => this.origins.delete(origin));
   }
 }
 
@@ -56,7 +56,9 @@ describe('SiteAccessService', () => {
       status: 'ready',
       pageOrigin: 'https://example.com',
     });
-    expect(permissions.grantRequests).toEqual(['https://example.com/*']);
+    expect(permissions.grantRequests).toEqual([
+      ['https://example.com/*', 'https://api.openai.com/*'],
+    ]);
     expect(confirm).toHaveBeenCalledWith({
       pageOrigin: 'https://example.com',
       provider: openai,
@@ -87,7 +89,9 @@ describe('SiteAccessService', () => {
     await service.request('https://example.com/other', openai, confirm);
 
     expect(confirm).toHaveBeenCalledOnce();
-    expect(permissions.grantRequests).toEqual(['https://example.com/*']);
+    expect(permissions.grantRequests).toEqual([
+      ['https://example.com/*', 'https://api.openai.com/*'],
+    ]);
     expect(await consents.read()).toHaveLength(1);
   });
 
@@ -160,7 +164,7 @@ describe('SiteAccessService', () => {
     );
 
     expect(await service.revoke('https://example.com/account')).toBe(true);
-    expect(permissions.removals).toEqual(['https://example.com/*']);
+    expect(permissions.removals).toEqual([['https://example.com/*']]);
     expect(await consents.read()).toEqual([]);
     expect(await service.revoke('https://example.com/account')).toBe(false);
   });

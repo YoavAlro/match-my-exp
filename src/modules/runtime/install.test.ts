@@ -14,11 +14,7 @@ describe('installRuntimeCoordination', () => {
     let removedListener: ((tabId: number) => void) | undefined;
     const query = vi
       .fn()
-      .mockImplementation(async (filter: { active?: boolean }) =>
-        filter.active
-          ? [{ id: 99, url: 'chrome-extension://extension-id/sidepanel.html' }]
-          : [{ id: 12, url: 'https://example.com/account' }],
-      );
+      .mockResolvedValue([{ id: 12, url: 'https://example.com/account' }]);
     const api = {
       runtime: {
         id: 'extension-id',
@@ -71,7 +67,7 @@ describe('installRuntimeCoordination', () => {
 
     expect(response).toMatchObject({ readiness: 'ready', tabId: 12, epoch: 1 });
     expect(query).toHaveBeenCalledWith({ active: true, currentWindow: true });
-    query.mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+    query.mockResolvedValueOnce([]);
     expect(
       await messageListener?.(
         {

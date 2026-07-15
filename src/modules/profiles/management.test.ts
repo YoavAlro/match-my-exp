@@ -91,7 +91,7 @@ describe('ProfileManagementService', () => {
 
     expect(await service.revoke('https://example.com')).toBe(true);
     expect(clear).toHaveBeenCalledOnce();
-    expect(remove).toHaveBeenCalledWith('https://example.com/*');
+    expect(remove).toHaveBeenCalledWith(['https://example.com/*']);
     expect(await repository.enabledOrigins()).toEqual([]);
     expect((await repository.get(first.id))?.enabled).toBe(false);
     expect((await repository.get(second.id))?.enabled).toBe(false);

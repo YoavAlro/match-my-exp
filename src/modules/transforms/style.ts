@@ -55,6 +55,8 @@ interface ActivePreview extends CompiledPreview {
 
 export type CssSupport = (property: string, value: string) => boolean;
 
+let nextRegistryId = 1;
+
 const fallbackCssSupport: CssSupport = (property, value) => {
   const probe = document.createElement('div');
   probe.style.setProperty(property, value);
@@ -112,6 +114,7 @@ const appendStyle = (root: StyleRoot, cssText: string) => {
 export class StylePreviewRegistry {
   readonly #previews = new Map<string, ActivePreview>();
   readonly #supports: CssSupport;
+  readonly #registryId = nextRegistryId++;
   #nextToken = 1;
 
   constructor(supports: CssSupport = browserCssSupport) {
@@ -241,7 +244,7 @@ export class StylePreviewRegistry {
         );
       }
       targetProperties.set(input.target, properties);
-      const token = `mme-${this.#nextToken}-${operation.operationId}`;
+      const token = `mme-${this.#registryId}-${this.#nextToken}-${operation.operationId}`;
       this.#nextToken += 1;
       bindings.push({ target: input.target, token });
       const selector = `[data-match-my-exp-style~="${token}"]`;

@@ -18,7 +18,7 @@ export class AnthropicProvider {
     fetchImplementation: typeof fetch = fetch,
   ) {
     this.#vault = vault;
-    this.#fetch = fetchImplementation;
+    this.#fetch = fetchImplementation.bind(globalThis);
   }
 
   async propose(request: {

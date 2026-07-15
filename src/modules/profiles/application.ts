@@ -21,41 +21,30 @@ export class ProfileApplicationError extends Error {
   }
 }
 
-export class ProfileApplicationService {
-  readonly #repository: ProfileRepository;
+export class DocumentProfileApplication {
   readonly #styles: StylePreviewRegistry;
   #activePreviewId: string | null = null;
 
-  constructor(repository: ProfileRepository, styles: StylePreviewRegistry) {
-    this.#repository = repository;
+  constructor(styles: StylePreviewRegistry) {
     this.#styles = styles;
   }
 
-  async apply(
-    document: Document,
-    pageUrl: string,
-  ): Promise<ProfileApplicationResult> {
-    const url = new URL(pageUrl);
-    const profiles = await this.#repository.listByOrigin(url.origin);
-    const resolution = resolveProfile(profiles, pageUrl);
-    if (resolution.status === 'none') {
-      this.clear();
-      return { status: 'none' };
-    }
-    if (resolution.status === 'conflict') {
-      throw new ProfileApplicationError('profile_resolution_conflict');
-    }
-    const bindings = this.#preflight(document, resolution.profile);
-    const previewId = previewIdFor(resolution.profile);
-    this.#styles.apply(previewId, bindings);
-    if (this.#activePreviewId !== null && this.#activePreviewId !== previewId) {
-      this.#styles.rollback(this.#activePreviewId);
+  apply(document: Document, profile: Profile): ProfileApplicationResult {
+    const bindings = this.#preflight(document, profile);
+    const previewId = previewIdFor(profile);
+    if (this.#activePreviewId === previewId) {
+      this.#styles.replace(previewId, bindings);
+    } else {
+      this.#styles.apply(previewId, bindings);
+      if (this.#activePreviewId !== null) {
+        this.#styles.rollback(this.#activePreviewId);
+      }
     }
     this.#activePreviewId = previewId;
     return {
       status: 'applied',
-      profileId: resolution.profile.id,
-      revision: resolution.profile.revision,
+      profileId: profile.id,
+      revision: profile.revision,
     };
   }
 
@@ -83,6 +72,37 @@ export class ProfileApplicationService {
       }
       return { operation, target: resolution.element };
     });
+  }
+}
+
+export class ProfileApplicationService {
+  readonly #repository: ProfileRepository;
+  readonly #documentApplication: DocumentProfileApplication;
+
+  constructor(repository: ProfileRepository, styles: StylePreviewRegistry) {
+    this.#repository = repository;
+    this.#documentApplication = new DocumentProfileApplication(styles);
+  }
+
+  async apply(
+    document: Document,
+    pageUrl: string,
+  ): Promise<ProfileApplicationResult> {
+    const url = new URL(pageUrl);
+    const profiles = await this.#repository.listByOrigin(url.origin);
+    const resolution = resolveProfile(profiles, pageUrl);
+    if (resolution.status === 'none') {
+      this.clear();
+      return { status: 'none' };
+    }
+    if (resolution.status === 'conflict') {
+      throw new ProfileApplicationError('profile_resolution_conflict');
+    }
+    return this.#documentApplication.apply(document, resolution.profile);
+  }
+
+  clear() {
+    return this.#documentApplication.clear();
   }
 }
 

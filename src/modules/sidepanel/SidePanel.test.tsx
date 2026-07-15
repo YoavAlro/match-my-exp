@@ -156,6 +156,49 @@ describe('SidePanel', () => {
     expect(sendPanelCommand).toHaveBeenCalledTimes(2);
   });
 
+  it('shows a redacted error when a request becomes stale', async () => {
+    render(
+      <SidePanel
+        loadReadiness={async () => ({
+          schemaVersion: 1,
+          type: 'panel.readiness.response',
+          requestId: '00000000-0000-4000-8000-000000000001',
+          readiness: 'ready',
+          tabId: 7,
+          origin: 'https://example.com',
+          path: '/account',
+          epoch: 1,
+        })}
+        requestSiteAccess={async () => ({
+          status: 'ready',
+          pageOrigin: 'https://example.com',
+        })}
+        configureProvider={async () => undefined}
+        sendPanelCommand={async () => {
+          throw new Error('private provider response');
+        }}
+      />,
+    );
+    const user = userEvent.setup();
+    await user.click(
+      await screen.findByRole('button', { name: 'Grant site access' }),
+    );
+    await user.type(screen.getByLabelText('API key', { exact: true }), 'key');
+    await user.click(screen.getByRole('button', { name: 'Save provider' }));
+    await user.type(
+      screen.getByLabelText('Describe the change'),
+      'Increase contrast',
+    );
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'The request did not complete because the page or provider changed.',
+    );
+    expect(
+      screen.queryByText('private provider response'),
+    ).not.toBeInTheDocument();
+  });
+
   it('has no detectable accessibility violations', async () => {
     const { container } = render(<SidePanel />);
     const results = await axe.run(container, {

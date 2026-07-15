@@ -53,6 +53,11 @@ const compileOperation = (
   return { ...operation, target };
 };
 
+export const compileProfileOperations = (
+  operations: readonly ProposalOperation[],
+  inspection: PageInspection,
+) => operations.map((operation) => compileOperation(operation, inspection));
+
 export class ProfileDraftService {
   readonly #repository: ProfileRepository;
   readonly #createId: () => string;
@@ -72,8 +77,9 @@ export class ProfileDraftService {
     if (input.operations.length === 0) {
       throw new ProfileDraftError('draft_has_no_operations');
     }
-    const operations = input.operations.map((operation) =>
-      compileOperation(operation, input.inspection),
+    const operations = compileProfileOperations(
+      input.operations,
+      input.inspection,
     );
     const createdAt = this.#now();
     const profile: Profile = ProfileSchema.parse({

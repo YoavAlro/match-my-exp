@@ -1,5 +1,17 @@
-import { RuntimeMessageSchema } from '@/src/modules/contracts';
-import { inspectDocument, type PageInspection } from '@/src/modules/inspection';
+import {
+  ProfileSchema,
+  RuntimeMessageSchema,
+  type ProposalOperation,
+} from '@/src/modules/contracts';
+import {
+  DynamicPageCoordinator,
+  inspectDocument,
+  type PageInspection,
+} from '@/src/modules/inspection';
+import {
+  compileProfileOperations,
+  DocumentProfileApplication,
+} from '@/src/modules/profiles';
 import {
   StylePreviewRegistry,
   type ResolvedStyleOperation,
@@ -8,16 +20,55 @@ import {
 export default defineContentScript({
   matches: ['https://*/*'],
   registration: 'runtime',
-  main() {
-    const state = globalThis as typeof globalThis & Record<string, unknown>;
-    if (state.__matchMyExpContentStarted === true) {
-      return;
-    }
-    state.__matchMyExpContentStarted = true;
+  main(ctx) {
     let inspection: PageInspection | null = null;
-    const styles = new StylePreviewRegistry();
+    let refreshGeneration = 0;
+    const previewStyles = new StylePreviewRegistry();
+    const profileApplication = new DocumentProfileApplication(
+      new StylePreviewRegistry(),
+    );
+    const previewOperations = new Map<string, ProposalOperation[]>();
 
-    browser.runtime.onMessage.addListener(async (raw, sender) => {
+    const clear = () => {
+      refreshGeneration += 1;
+      inspection = null;
+      previewOperations.clear();
+      previewStyles.rollbackAll();
+      profileApplication.clear();
+    };
+
+    const refreshProfile = async () => {
+      const generation = ++refreshGeneration;
+      const origin = location.origin;
+      const path = location.pathname;
+      const response = RuntimeMessageSchema.parse(
+        await browser.runtime.sendMessage({
+          schemaVersion: 1,
+          type: 'profile.resolve.request',
+          requestId: crypto.randomUUID(),
+          expectedOrigin: origin,
+          expectedPath: path,
+        }),
+      );
+      if (
+        response.type !== 'profile.resolve.response' ||
+        generation !== refreshGeneration ||
+        location.origin !== origin ||
+        location.pathname !== path
+      ) {
+        return;
+      }
+      if (response.profile === null) {
+        profileApplication.clear();
+      } else {
+        profileApplication.apply(document, response.profile);
+      }
+    };
+
+    const onMessage = async (
+      raw: unknown,
+      sender: Browser.runtime.MessageSender,
+    ) => {
       if (sender.id !== browser.runtime.id) {
         return undefined;
       }
@@ -71,20 +122,101 @@ export default defineContentScript({
             };
           },
         );
-        styles.apply(message.previewId, operations);
+        previewOperations.clear();
+        previewStyles.rollbackAll();
+        previewStyles.apply(message.previewId, operations);
+        previewOperations.set(message.previewId, message.operations);
         return { status: 'previewed' };
       }
       if (message.type === 'preview.rollback') {
-        styles.rollback(message.previewId);
+        previewOperations.delete(message.previewId);
+        previewStyles.rollback(message.previewId);
         return { status: 'rolled-back' };
       }
+      if (message.type === 'profile.compile.request') {
+        if (
+          inspection === null ||
+          message.expectedOrigin !== location.origin ||
+          message.expectedPath !== location.pathname
+        ) {
+          return undefined;
+        }
+        const operations = previewOperations.get(message.previewId);
+        if (operations === undefined) {
+          return undefined;
+        }
+        return RuntimeMessageSchema.parse({
+          schemaVersion: 1,
+          type: 'profile.compile.response',
+          requestId: message.requestId,
+          previewId: message.previewId,
+          operations: compileProfileOperations(operations, inspection),
+        });
+      }
+      if (message.type === 'profile.apply') {
+        if (
+          message.expectedOrigin !== location.origin ||
+          message.expectedPath !== location.pathname
+        ) {
+          return undefined;
+        }
+        profileApplication.apply(
+          document,
+          ProfileSchema.parse({
+            schemaVersion: 1,
+            id: message.profileId,
+            name: 'Applied profile',
+            enabled: true,
+            origin: message.expectedOrigin,
+            pathPattern: message.expectedPath,
+            intentSummary: 'Applied saved website adaptation.',
+            conversationId: message.profileId,
+            operations: message.operations,
+            revision: message.revision,
+            health: { state: 'healthy' },
+            createdAt: '1970-01-01T00:00:00.000Z',
+            updatedAt: '1970-01-01T00:00:00.000Z',
+          }),
+        );
+        previewOperations.clear();
+        previewStyles.rollbackAll();
+        return RuntimeMessageSchema.parse({
+          schemaVersion: 1,
+          type: 'profile.apply.response',
+          requestId: message.requestId,
+          profileId: message.profileId,
+          revision: message.revision,
+        });
+      }
+      if (message.type === 'profile.clear') {
+        if (message.expectedOrigin === location.origin) {
+          clear();
+        }
+        return { status: 'cleared' };
+      }
       return undefined;
+    };
+    browser.runtime.onMessage.addListener(onMessage);
+
+    const dynamic = new DynamicPageCoordinator({
+      document,
+      onSettled: () => refreshProfile(),
+    });
+    dynamic.start();
+
+    ctx.addEventListener(window, 'wxt:locationchange', (event) => {
+      clear();
+      dynamic.navigate(event.newUrl.pathname);
+      void refreshProfile();
+    });
+    ctx.addEventListener(globalThis, 'pagehide', clear);
+    ctx.onInvalidated(() => {
+      browser.runtime.onMessage.removeListener(onMessage);
+      dynamic.stop();
+      clear();
     });
 
-    globalThis.addEventListener('pagehide', () => {
-      styles.rollbackAll();
-      inspection = null;
-    });
     document.dispatchEvent(new CustomEvent('match-my-exp:content-ready'));
+    void refreshProfile();
   },
 });

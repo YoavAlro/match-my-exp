@@ -1,8 +1,11 @@
 import {
   PanelChatCommandSchema,
   PanelChatResponseSchema,
+  ProfileSchema,
   RuntimeMessageSchema,
 } from '../contracts';
+import { ChromeConsentStorage, SiteAccessService } from '../permissions';
+import { ChromeProfileStorage, ProfileRepository } from '../profiles';
 import {
   AnthropicProvider,
   CompatibleProvider,
@@ -11,11 +14,15 @@ import {
   OpenAIProvider,
   ProviderSettingsService,
 } from '../providers';
-import { ActiveTabCoordinator, type RuntimeSender } from './coordination';
+import {
+  ActiveTabCoordinator,
+  type PageRequestContext,
+  type RuntimeSender,
+} from './coordination';
 
 type BrowserChatApi = Pick<
   typeof browser,
-  'runtime' | 'scripting' | 'storage' | 'tabs'
+  'permissions' | 'runtime' | 'scripting' | 'storage' | 'tabs'
 >;
 
 interface ActivePreview {
@@ -23,6 +30,33 @@ interface ActivePreview {
   origin: string;
   path: string;
 }
+
+const providerDestination = (
+  configuration: Exclude<
+    Awaited<ReturnType<ProviderSettingsService['status']>>['configuration'],
+    null
+  >,
+) => {
+  if (configuration.provider === 'openai') {
+    return { id: configuration.provider, origin: 'https://api.openai.com' };
+  }
+  if (configuration.provider === 'anthropic') {
+    return { id: configuration.provider, origin: 'https://api.anthropic.com' };
+  }
+  if (configuration.provider === 'gemini') {
+    return {
+      id: configuration.provider,
+      origin: 'https://generativelanguage.googleapis.com',
+    };
+  }
+  if ('config' in configuration) {
+    return {
+      id: configuration.provider,
+      origin: new URL(configuration.config.endpoint).origin,
+    };
+  }
+  throw new Error('Provider destination is unsupported');
+};
 
 const senderSnapshot = (sender: {
   id?: string | undefined;
@@ -40,8 +74,20 @@ export const installPanelChatBridge = (
 ) => {
   const vault = new CredentialVault(api.storage.local);
   const settings = new ProviderSettingsService(api.storage.local, vault);
+  const access = new SiteAccessService(
+    {
+      contains: (origins) =>
+        api.permissions.contains({ origins: [...origins] }),
+      request: (origins) => api.permissions.request({ origins: [...origins] }),
+      remove: (origins) => api.permissions.remove({ origins: [...origins] }),
+    },
+    new ChromeConsentStorage(api.storage.local),
+  );
+  const profiles = new ProfileRepository(
+    new ChromeProfileStorage(api.storage.local),
+  );
   const active = new Map<number, ActivePreview>();
-  const injected = new Set<string>();
+  const injected = new Map<string, string | undefined>();
 
   api.runtime.onMessage.addListener((raw, sender) => {
     if (
@@ -67,26 +113,134 @@ export const installPanelChatBridge = (
   const handleCommand = async (
     command: ReturnType<typeof PanelChatCommandSchema.parse>,
   ) => {
-    const context = coordinator.beginPageRequest(command.requestId);
+    let context: PageRequestContext;
+    try {
+      context = coordinator.beginPageRequest(command.requestId);
+    } catch {
+      const [tab] = await api.tabs.query({ active: true, currentWindow: true });
+      coordinator.update(
+        tab === undefined
+          ? undefined
+          : {
+              ...(tab.id === undefined ? {} : { id: tab.id }),
+              ...(tab.url === undefined ? {} : { url: tab.url }),
+            },
+      );
+      context = coordinator.beginPageRequest(command.requestId);
+    }
+    const assertCurrent = () => {
+      if (!coordinator.isCurrent(context)) {
+        throw new Error('Active page changed during request');
+      }
+    };
+    const sendToPage = (message: unknown) =>
+      context.documentId === undefined
+        ? api.tabs.sendMessage(context.tabId, message)
+        : api.tabs.sendMessage(context.tabId, message, {
+            documentId: context.documentId,
+          });
+    if (
+      !(await api.permissions.contains({
+        origins: [`${context.origin}/*`],
+      }))
+    ) {
+      throw new Error('Site access is not authorized');
+    }
+    assertCurrent();
     if (command.type === 'panel.preview.keep') {
       const preview = active.get(context.tabId);
-      if (preview?.previewId !== command.previewId) {
+      if (preview !== undefined && preview.previewId !== command.previewId) {
         throw new Error('Preview is not active');
       }
+      const compiled = RuntimeMessageSchema.parse(
+        await sendToPage({
+          schemaVersion: 1,
+          type: 'profile.compile.request',
+          requestId: command.requestId,
+          previewId: command.previewId,
+          expectedOrigin: context.origin,
+          expectedPath: context.path,
+        }),
+      );
+      if (
+        compiled.type !== 'profile.compile.response' ||
+        compiled.requestId !== command.requestId ||
+        compiled.previewId !== command.previewId
+      ) {
+        throw new Error('Compiled profile response is invalid');
+      }
+      assertCurrent();
+      const now = new Date().toISOString();
+      const existing = (await profiles.listByOrigin(context.origin)).find(
+        (profile) => profile.pathPattern === context.path,
+      );
+      const name = command.intent.slice(0, 80);
+      const stored =
+        existing === undefined
+          ? await profiles.create(
+              ProfileSchema.parse({
+                schemaVersion: 1,
+                id: crypto.randomUUID(),
+                name,
+                enabled: true,
+                origin: context.origin,
+                pathPattern: context.path,
+                intentSummary: command.intent,
+                conversationId: crypto.randomUUID(),
+                operations: compiled.operations,
+                revision: 1,
+                health: { state: 'healthy' },
+                createdAt: now,
+                updatedAt: now,
+              }),
+            )
+          : await profiles.update(
+              ProfileSchema.parse({
+                ...existing,
+                name,
+                enabled: true,
+                intentSummary: command.intent,
+                operations: compiled.operations,
+                revision: existing.revision + 1,
+                health: { state: 'healthy' },
+                updatedAt: now,
+              }),
+            );
+      const applied = RuntimeMessageSchema.parse(
+        await sendToPage({
+          schemaVersion: 1,
+          type: 'profile.apply',
+          requestId: command.requestId,
+          profileId: stored.id,
+          revision: stored.revision,
+          operations: stored.operations,
+          expectedOrigin: context.origin,
+          expectedPath: context.path,
+        }),
+      );
+      if (
+        applied.type !== 'profile.apply.response' ||
+        applied.requestId !== command.requestId ||
+        applied.profileId !== stored.id ||
+        applied.revision !== stored.revision
+      ) {
+        throw new Error('Profile application response is invalid');
+      }
+      assertCurrent();
       active.delete(context.tabId);
       return PanelChatResponseSchema.parse({
         schemaVersion: 1,
         type: 'panel.chat.response',
         requestId: command.requestId,
         status: 'kept',
-        assistantMessage: '',
+        assistantMessage: 'Saved for this page.',
         previewId: command.previewId,
         clarificationQuestion: null,
         clarificationChoices: [],
       });
     }
     if (command.type === 'panel.preview.discard') {
-      await api.tabs.sendMessage(context.tabId, {
+      await sendToPage({
         schemaVersion: 1,
         type: 'preview.rollback',
         requestId: command.requestId,
@@ -94,6 +248,7 @@ export const installPanelChatBridge = (
         expectedOrigin: context.origin,
         expectedPath: context.path,
       });
+      assertCurrent();
       active.delete(context.tabId);
       return PanelChatResponseSchema.parse({
         schemaVersion: 1,
@@ -109,7 +264,7 @@ export const installPanelChatBridge = (
 
     const previous = active.get(context.tabId);
     if (previous !== undefined) {
-      await api.tabs.sendMessage(context.tabId, {
+      await sendToPage({
         schemaVersion: 1,
         type: 'preview.rollback',
         requestId: command.requestId,
@@ -117,18 +272,41 @@ export const installPanelChatBridge = (
         expectedOrigin: previous.origin,
         expectedPath: previous.path,
       });
+      assertCurrent();
       active.delete(context.tabId);
     }
 
+    const configured = await settings.status();
+    if (configured.configuration === null) {
+      throw new Error('Provider is not configured');
+    }
+    const provider = configured.configuration;
+    const authorization = await access.readiness(
+      `${context.origin}${context.path}`,
+      providerDestination(provider),
+    );
+    if (authorization.status !== 'ready') {
+      throw new Error('Site and provider access is not authorized');
+    }
+    assertCurrent();
+
     const injectionKey = `${context.tabId}:${context.epoch}`;
     if (!injected.has(injectionKey)) {
-      await api.scripting.executeScript({
+      const results = await api.scripting.executeScript({
         target: { tabId: context.tabId, frameIds: [0] },
         files: ['/content-scripts/content.js'],
       });
-      injected.add(injectionKey);
+      injected.set(
+        injectionKey,
+        results.find(({ frameId }) => frameId === 0)?.documentId,
+      );
     }
-    const inspectionRaw = await api.tabs.sendMessage(context.tabId, {
+    const documentId = injected.get(injectionKey);
+    if (documentId !== undefined) {
+      context.documentId = documentId;
+    }
+    assertCurrent();
+    const inspectionRaw = await sendToPage({
       schemaVersion: 1,
       type: 'page.inspect.request',
       requestId: command.requestId,
@@ -137,15 +315,13 @@ export const installPanelChatBridge = (
       expectedPath: context.path,
     });
     const inspection = RuntimeMessageSchema.parse(inspectionRaw);
-    if (inspection.type !== 'page.inspect.response') {
+    if (
+      inspection.type !== 'page.inspect.response' ||
+      inspection.requestId !== command.requestId
+    ) {
       throw new Error('Inspection response is invalid');
     }
-
-    const configured = await settings.status();
-    if (configured.configuration === null) {
-      throw new Error('Provider is not configured');
-    }
-    const provider = configured.configuration;
+    assertCurrent();
     let result;
     if (provider.provider === 'compatible') {
       result = await new CompatibleProvider(vault, provider.config).propose({
@@ -171,6 +347,7 @@ export const installPanelChatBridge = (
         pageContext: inspection.context,
       });
     }
+    assertCurrent();
     if (result.proposal.clarification !== null) {
       return PanelChatResponseSchema.parse({
         schemaVersion: 1,
@@ -187,7 +364,7 @@ export const installPanelChatBridge = (
       throw new Error('M1 bridge accepts style proposals only');
     }
     const previewId = crypto.randomUUID();
-    await api.tabs.sendMessage(context.tabId, {
+    const previewed = await sendToPage({
       schemaVersion: 1,
       type: 'proposal.preview',
       requestId: command.requestId,
@@ -196,6 +373,15 @@ export const installPanelChatBridge = (
       expectedPath: context.path,
       operations: result.proposal.operations,
     });
+    if (
+      previewed === null ||
+      typeof previewed !== 'object' ||
+      !('status' in previewed) ||
+      previewed.status !== 'previewed'
+    ) {
+      throw new Error('Preview response is invalid');
+    }
+    assertCurrent();
     active.set(context.tabId, {
       previewId,
       origin: context.origin,

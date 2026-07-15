@@ -1,9 +1,11 @@
 export {
+  DocumentProfileApplication,
   ProfileApplicationError,
   ProfileApplicationService,
   type ProfileApplicationResult,
 } from './application';
 export {
+  compileProfileOperations,
   ProfileDraftError,
   ProfileDraftService,
   type ProfileDraftInput,

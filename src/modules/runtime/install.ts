@@ -61,8 +61,7 @@ export const installRuntimeCoordination = (
         if (activeTab?.url?.startsWith('https://')) {
           return tabSnapshot(activeTab);
         }
-        const tabs = await api.tabs.query({ currentWindow: true });
-        return tabSnapshot(tabs.find((tab) => tab.url?.startsWith('https://')));
+        return tabSnapshot(activeTab);
       },
     );
   });

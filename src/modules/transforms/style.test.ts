@@ -28,6 +28,35 @@ const resolved = (
 });
 
 describe('StylePreviewRegistry', () => {
+  it('isolates ownership tokens across registries', () => {
+    document.body.innerHTML = '<button id="save">Save</button>';
+    const target = document.querySelector('#save');
+    if (target === null) {
+      throw new Error('Fixture target is missing');
+    }
+    const operation = {
+      kind: 'style' as const,
+      operationId: 'style-save',
+      target: { kind: 'ephemeral' as const, elementId: 'element-save' },
+      declarations: [{ property: 'color' as const, value: 'red' }],
+    };
+    const preview = new StylePreviewRegistry(() => true);
+    const durable = new StylePreviewRegistry(() => true);
+    preview.apply('preview-one', [
+      { operation, resolvedElementId: 'element-save', target },
+    ]);
+    durable.apply('profile-one', [
+      { operation, resolvedElementId: 'element-save', target },
+    ]);
+
+    preview.rollback('preview-one');
+
+    expect(target.getAttribute('data-match-my-exp-style')).toMatch(
+      /^mme-[0-9]+-[0-9]+-style-save$/,
+    );
+    expect(durable.activeCount).toBe(1);
+  });
+
   beforeEach(() => {
     document.head.innerHTML = '';
     document.body.innerHTML = '';

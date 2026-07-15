@@ -8,3 +8,4 @@ export {
   type TabSnapshot,
 } from './coordination';
 export { installRuntimeCoordination } from './install';
+export { installProfileBridge } from './profile-bridge';

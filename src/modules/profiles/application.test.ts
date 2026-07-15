@@ -198,4 +198,24 @@ describe('ProfileApplicationService', () => {
     ).toMatchObject({ status: 'applied' });
     expect(restartedStyles.activeCount).toBe(1);
   });
+
+  it('rebinds the same revision after a dynamic target replacement', async () => {
+    const repository = new ProfileRepository(new MemoryProfileStorage());
+    await repository.create(profile('00000000-0000-4000-8000-000000000001'));
+    const styles = new StylePreviewRegistry(() => true);
+    const service = new ProfileApplicationService(repository, styles);
+    await service.apply(document, 'https://example.com/account');
+
+    document.body.innerHTML = '<main id="main">Replaced account</main>';
+    await expect(
+      service.apply(document, 'https://example.com/account'),
+    ).resolves.toMatchObject({ status: 'applied' });
+    expect(styles.activeCount).toBe(1);
+    expect(
+      document.querySelectorAll('style[data-match-my-exp-owned]'),
+    ).toHaveLength(1);
+    expect(document.querySelector('#main')).toHaveAttribute(
+      'data-match-my-exp-style',
+    );
+  });
 });
