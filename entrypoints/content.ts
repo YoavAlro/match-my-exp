@@ -23,6 +23,9 @@ export default defineContentScript({
   main(ctx) {
     let inspection: PageInspection | null = null;
     let refreshGeneration = 0;
+    let activeProfile = false;
+    let refreshTimer: number | null = null;
+    let navigationGeneration = 0;
     const previewStyles = new StylePreviewRegistry();
     const profileApplication = new DocumentProfileApplication(
       new StylePreviewRegistry(),
@@ -31,6 +34,11 @@ export default defineContentScript({
 
     const clear = () => {
       refreshGeneration += 1;
+      activeProfile = false;
+      if (refreshTimer !== null) {
+        clearTimeout(refreshTimer);
+        refreshTimer = null;
+      }
       inspection = null;
       previewOperations.clear();
       previewStyles.rollbackAll();
@@ -59,10 +67,24 @@ export default defineContentScript({
         return;
       }
       if (response.profile === null) {
+        activeProfile = false;
         profileApplication.clear();
       } else {
         profileApplication.apply(document, response.profile);
+        activeProfile = true;
       }
+    };
+
+    const scheduleProfileRefresh = () => {
+      if (!activeProfile || refreshTimer !== null) {
+        return;
+      }
+      refreshTimer = ctx.setTimeout(() => {
+        refreshTimer = null;
+        if (activeProfile) {
+          void refreshProfile();
+        }
+      }, 750);
     };
 
     const onMessage = async (
@@ -178,6 +200,7 @@ export default defineContentScript({
             updatedAt: '1970-01-01T00:00:00.000Z',
           }),
         );
+        activeProfile = true;
         previewOperations.clear();
         previewStyles.rollbackAll();
         return RuntimeMessageSchema.parse({
@@ -200,14 +223,30 @@ export default defineContentScript({
 
     const dynamic = new DynamicPageCoordinator({
       document,
-      onSettled: () => refreshProfile(),
+      onSettled: scheduleProfileRefresh,
     });
     dynamic.start();
 
     ctx.addEventListener(window, 'wxt:locationchange', (event) => {
+      const navigation = ++navigationGeneration;
       clear();
       dynamic.navigate(event.newUrl.pathname);
-      void refreshProfile();
+      const refreshSettledRoute = (attempt: number) => {
+        if (navigation !== navigationGeneration) {
+          return;
+        }
+        if (
+          location.origin === event.newUrl.origin &&
+          location.pathname === event.newUrl.pathname
+        ) {
+          void refreshProfile();
+          return;
+        }
+        if (attempt < 20) {
+          ctx.setTimeout(() => refreshSettledRoute(attempt + 1), 50);
+        }
+      };
+      refreshSettledRoute(0);
     });
     ctx.addEventListener(globalThis, 'pagehide', clear);
     ctx.onInvalidated(() => {

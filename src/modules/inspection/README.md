@@ -12,7 +12,8 @@ ephemeral element references.
 - Compute accessible names, roles, bounded direct text, selected attributes,
   geometry, and style samples
 - Assign opaque request-scoped IDs and retain a private element registry
-- Enforce element, text, shadow-depth, and serialized-byte budgets
+- Enforce visited-node, captured-element, text, shadow-depth, and serialized-byte
+  budgets
 - Emit context without query strings or fragments
 - Batch route and added-subtree work while observing discovered open shadow roots
 - Ignore extension-owned style and marker subtrees
@@ -55,4 +56,6 @@ reference closure.
 
 Tests cover privacy exclusions, accessible semantics, budgets, SPA path state,
 open and nested shadow roots, closed roots, opaque ID resolution, and invalid ID
-generation. The M0 browser benchmark retains real responsive geometry coverage.
+generation. Large-page tests prove inspection and dynamic shadow discovery stop
+without materializing unbounded subtrees. The M0 browser benchmark retains real
+responsive geometry coverage.

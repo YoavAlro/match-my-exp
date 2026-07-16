@@ -143,6 +143,23 @@ describe('inspectDocument', () => {
     ).toThrow('Inspection context cannot fit the byte budget');
   });
 
+  it('bounds visited nodes before traversing a large live page', () => {
+    document.body.innerHTML = `<main>${Array.from(
+      { length: 2_000 },
+      (_, index) => `<section>Item ${index}</section>`,
+    ).join('')}<button>Unbounded target</button></main>`;
+
+    const context = inspectDocument(document, location, {
+      createElementId: sequentialIds(),
+      budget: { maxElements: 250, maxVisitedElements: 20 },
+    }).context;
+
+    expect(context.elements.length).toBeLessThanOrEqual(20);
+    expect(
+      context.elements.some(({ text }) => text === 'Unbounded target'),
+    ).toBe(false);
+  });
+
   it('captures settled SPA paths without query strings or fragments', () => {
     document.body.innerHTML = '<main>Inbox</main>';
 

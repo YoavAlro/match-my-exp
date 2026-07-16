@@ -7,6 +7,7 @@ import {
 
 export interface InspectionBudget {
   maxElements: number;
+  maxVisitedElements: number;
   maxSerializedBytes: number;
   maxTextCharacters: number;
   maxShadowDepth: number;
@@ -24,7 +25,8 @@ export interface InspectionOptions {
 }
 
 const DEFAULT_BUDGET: InspectionBudget = {
-  maxElements: 250,
+  maxElements: 160,
+  maxVisitedElements: 800,
   maxSerializedBytes: 64 * 1024,
   maxTextCharacters: 256,
   maxShadowDepth: 8,
@@ -186,6 +188,7 @@ export const inspectDocument = (
   const createElementId = options.createElementId ?? defaultElementId;
   const elements: PageElement[] = [];
   const registry = new Map<string, Element>();
+  let visitedElements = 0;
 
   const walk = (
     element: Element,
@@ -193,9 +196,13 @@ export const inspectDocument = (
     shadowHostId?: string,
     shadowDepth = 0,
   ) => {
-    if (elements.length >= budget.maxElements) {
+    if (
+      elements.length >= budget.maxElements ||
+      visitedElements >= budget.maxVisitedElements
+    ) {
       return;
     }
+    visitedElements += 1;
     const tag = element.tagName.toLowerCase();
     if (excludedTags.has(tag) || !isVisible(element)) {
       return;

@@ -83,17 +83,31 @@ export class DynamicPageCoordinator {
     if (root === null) {
       return;
     }
-    const candidates = [root, ...root.querySelectorAll('*')].slice(
-      0,
-      this.#maximumAddedElements,
-    );
-    for (const element of candidates) {
+    const candidates = [root];
+    for (
+      let index = 0;
+      index < candidates.length && index < this.#maximumAddedElements;
+      index += 1
+    ) {
+      const element = candidates[index] as Element;
       if (
         element.shadowRoot !== null &&
         !this.#observers.has(element.shadowRoot)
       ) {
         this.#observe(element.shadowRoot);
         this.#pending.add('shadow-root');
+      }
+      for (const child of element.children) {
+        if (candidates.length >= this.#maximumAddedElements) {
+          break;
+        }
+        candidates.push(child);
+      }
+      for (const child of element.shadowRoot?.children ?? []) {
+        if (candidates.length >= this.#maximumAddedElements) {
+          break;
+        }
+        candidates.push(child);
       }
     }
   }

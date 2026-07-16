@@ -53,6 +53,22 @@ describe('DynamicPageCoordinator', () => {
     coordinator.stop();
   });
 
+  it('discovers roots without materializing an unbounded subtree', () => {
+    document.body.innerHTML = `<main>${'<section></section>'.repeat(500)}</main>`;
+    const querySelectorAll = vi.spyOn(Element.prototype, 'querySelectorAll');
+    const coordinator = new DynamicPageCoordinator({
+      document,
+      maximumAddedElements: 20,
+      onSettled: vi.fn(),
+    });
+
+    coordinator.start();
+
+    expect(querySelectorAll).not.toHaveBeenCalled();
+    coordinator.stop();
+    querySelectorAll.mockRestore();
+  });
+
   it('deduplicates route changes and supports explicit late shadow roots', async () => {
     const onSettled = vi.fn();
     const coordinator = new DynamicPageCoordinator({ document, onSettled });
