@@ -12,6 +12,7 @@ import {
   CredentialVault,
   GeminiProvider,
   OpenAIProvider,
+  ProviderRequestError,
   ProviderSettingsService,
 } from '../providers';
 import {
@@ -68,6 +69,54 @@ const senderSnapshot = (sender: {
   ...(sender.tab?.id === undefined ? {} : { tab: { id: sender.tab.id } }),
 });
 
+const errorResponse = (requestId: string, error: unknown) => {
+  let errorCode = 'request_failed';
+  let assistantMessage = 'I could not complete that request. Please try again.';
+  if (error instanceof ProviderRequestError) {
+    errorCode = error.code;
+    if (
+      error.code === 'provider_http_401' ||
+      error.code === 'provider_http_403'
+    ) {
+      assistantMessage = 'The provider rejected the API key.';
+    } else if (error.code === 'provider_http_404') {
+      assistantMessage = 'The provider endpoint or model was not found.';
+    } else if (error.code === 'provider_http_400') {
+      assistantMessage = 'The provider rejected the model or request format.';
+    } else if (error.code === 'provider_transport_failure') {
+      assistantMessage = 'The browser could not reach the provider endpoint.';
+    } else if (
+      error.code === 'provider_proposal_invalid' ||
+      error.code === 'provider_output_missing'
+    ) {
+      assistantMessage = 'The provider returned an unusable response.';
+    }
+  } else if (error instanceof Error) {
+    if (error.message === 'Active page changed during request') {
+      errorCode = 'page_changed';
+      assistantMessage = 'The page changed before I could finish.';
+    } else if (error.message === 'M1 bridge accepts style proposals only') {
+      errorCode = 'unsupported_operation';
+      assistantMessage =
+        'That response proposed an unsupported change. Try asking for a visual style change.';
+    } else if (error.message === 'Site and provider access is not authorized') {
+      errorCode = 'access_not_authorized';
+      assistantMessage = 'Site or provider access needs to be granted again.';
+    }
+  }
+  return PanelChatResponseSchema.parse({
+    schemaVersion: 1,
+    type: 'panel.chat.response',
+    requestId,
+    status: 'error',
+    assistantMessage,
+    previewId: null,
+    clarificationQuestion: null,
+    clarificationChoices: [],
+    errorCode,
+  });
+};
+
 export const installPanelChatBridge = (
   api: BrowserChatApi,
   coordinator: ActiveTabCoordinator,
@@ -107,7 +156,9 @@ export const installPanelChatBridge = (
     ) {
       return undefined;
     }
-    return handleCommand(command.data);
+    return handleCommand(command.data).catch((error: unknown) =>
+      errorResponse(command.data.requestId, error),
+    );
   });
 
   const handleCommand = async (

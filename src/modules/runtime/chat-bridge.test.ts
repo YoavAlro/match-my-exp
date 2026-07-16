@@ -245,8 +245,8 @@ describe('installPanelChatBridge', () => {
     ).toMatchObject({ status: 'discarded' });
     expect(sendMessage.mock.calls.at(-1)?.[1].type).toBe('preview.rollback');
     sendMessage.mockResolvedValueOnce(undefined);
-    await expect(
-      listener?.(
+    expect(
+      await listener?.(
         {
           schemaVersion: 1,
           type: 'panel.preview.keep',
@@ -256,7 +256,7 @@ describe('installPanelChatBridge', () => {
         },
         sender,
       ),
-    ).rejects.toThrow();
+    ).toMatchObject({ status: 'error', errorCode: 'request_failed' });
   });
 
   it('ignores untrusted and unrelated panel messages', () => {
@@ -442,7 +442,11 @@ describe('installPanelChatBridge', () => {
       ),
     );
 
-    await expect(request).rejects.toThrow('Active page changed during request');
+    await expect(request).resolves.toMatchObject({
+      status: 'error',
+      errorCode: 'page_changed',
+      assistantMessage: 'The page changed before I could finish.',
+    });
     expect(
       sendMessage.mock.calls.some(
         (call) => call[1].type === 'proposal.preview',

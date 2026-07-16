@@ -14,7 +14,9 @@ describe('SidePanel', () => {
     expect(
       screen.getByRole('heading', { name: 'Make the web fit you.' }),
     ).toBeInTheDocument();
-    expect(screen.getByText('Local-first by design')).toBeInTheDocument();
+    expect(
+      screen.getByText(/Local-first\. Preview before save\./),
+    ).toBeInTheDocument();
   });
 
   it('shows current-site readiness without page content', async () => {
@@ -71,6 +73,14 @@ describe('SidePanel', () => {
           epoch: 1,
         })}
         requestSiteAccess={requestSiteAccess}
+        loadProviderStatus={async () => ({
+          configuration: { provider: 'openai', model: 'gpt-5' },
+          credential: { present: true, identifier: 'configured' },
+        })}
+        checkSiteAccess={async () => ({
+          status: 'denied',
+          pageOrigin: 'https://example.com',
+        })}
       />,
     );
 
@@ -134,7 +144,7 @@ describe('SidePanel', () => {
     );
     const user = userEvent.setup();
     await user.click(
-      await screen.findByRole('button', { name: 'Grant site access' }),
+      await screen.findByRole('button', { name: 'Configure provider' }),
     );
     await user.type(
       screen.getByLabelText('API key', { exact: true }),
@@ -145,6 +155,9 @@ describe('SidePanel', () => {
       configuration: { provider: 'openai', model: 'gpt-5' },
       credential: 'sk-test',
     });
+    await user.click(
+      await screen.findByRole('button', { name: 'Grant site access' }),
+    );
 
     await user.type(
       await screen.findByLabelText('Describe the change'),
@@ -174,17 +187,28 @@ describe('SidePanel', () => {
           pageOrigin: 'https://example.com',
         })}
         configureProvider={async () => undefined}
-        sendPanelCommand={async () => {
-          throw new Error('private provider response');
-        }}
+        sendPanelCommand={async () => ({
+          schemaVersion: 1,
+          type: 'panel.chat.response',
+          requestId: '00000000-0000-4000-8000-000000000010',
+          status: 'error',
+          assistantMessage: 'The page changed before I could finish.',
+          previewId: null,
+          clarificationQuestion: null,
+          clarificationChoices: [],
+          errorCode: 'page_changed',
+        })}
       />,
     );
     const user = userEvent.setup();
     await user.click(
-      await screen.findByRole('button', { name: 'Grant site access' }),
+      await screen.findByRole('button', { name: 'Configure provider' }),
     );
     await user.type(screen.getByLabelText('API key', { exact: true }), 'key');
     await user.click(screen.getByRole('button', { name: 'Save provider' }));
+    await user.click(
+      await screen.findByRole('button', { name: 'Grant site access' }),
+    );
     await user.type(
       screen.getByLabelText('Describe the change'),
       'Increase contrast',
@@ -192,11 +216,77 @@ describe('SidePanel', () => {
     await user.click(screen.getByRole('button', { name: 'Send' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'The request did not complete because the page or provider changed.',
+      'The page changed before I could finish. (page_changed)',
     );
     expect(
       screen.queryByText('private provider response'),
     ).not.toBeInTheDocument();
+  });
+
+  it('restores a returning compatible-provider conversation', async () => {
+    const checkSiteAccess = vi.fn().mockResolvedValue({
+      status: 'ready',
+      pageOrigin: 'https://example.com',
+    });
+    const sendPanelCommand = vi.fn().mockResolvedValue({
+      schemaVersion: 1,
+      type: 'panel.chat.response',
+      requestId: '00000000-0000-4000-8000-000000000010',
+      status: 'clarification',
+      assistantMessage: 'Which text?',
+      previewId: null,
+      clarificationQuestion: 'Which text should be larger?',
+      clarificationChoices: ['Headlines', 'Article text'],
+    });
+    render(
+      <SidePanel
+        loadReadiness={async () => ({
+          schemaVersion: 1,
+          type: 'panel.readiness.response',
+          requestId: '00000000-0000-4000-8000-000000000001',
+          readiness: 'ready',
+          tabId: 7,
+          origin: 'https://example.com',
+          path: '/account',
+          epoch: 1,
+        })}
+        loadProviderStatus={async () => ({
+          configuration: {
+            provider: 'compatible',
+            config: {
+              endpoint: 'https://models.example/v1/responses',
+              model: 'model',
+              authentication: 'api-key',
+              structuredOutput: 'openai-responses-json-schema',
+              storeFalse: true,
+            },
+          },
+          credential: { present: true, identifier: 'configured' },
+        })}
+        checkSiteAccess={checkSiteAccess}
+        sendPanelCommand={sendPanelCommand}
+      />,
+    );
+    const user = userEvent.setup();
+
+    expect(await screen.findByText('Site access granted')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Make text larger' }));
+    const composer = screen.getByLabelText('Describe the change');
+    expect(composer).toHaveValue('Make the text larger');
+    await user.type(composer, '{enter}');
+    expect(
+      await screen.findByText('Which text should be larger?'),
+    ).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Headlines' }));
+    expect(composer).toHaveValue('Headlines');
+    await user.click(screen.getByRole('button', { name: 'Settings' }));
+    expect(screen.getByLabelText('Responses endpoint')).toHaveValue(
+      'https://models.example/v1/responses',
+    );
+    expect(screen.getByLabelText('Authentication')).toHaveValue('api-key');
+    await user.click(screen.getByRole('button', { name: 'Close' }));
+    expect(checkSiteAccess).toHaveBeenCalled();
+    expect(sendPanelCommand).toHaveBeenCalledOnce();
   });
 
   it('has no detectable accessibility violations', async () => {

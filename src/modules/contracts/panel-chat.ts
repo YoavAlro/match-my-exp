@@ -27,11 +27,12 @@ export const PanelChatResponseSchema = z.strictObject({
   schemaVersion: ContractVersionSchema,
   type: z.literal('panel.chat.response'),
   requestId: EntityIdSchema,
-  status: z.enum(['clarification', 'preview', 'kept', 'discarded']),
+  status: z.enum(['clarification', 'preview', 'kept', 'discarded', 'error']),
   assistantMessage: z.string().max(4_000),
   previewId: EntityIdSchema.nullable(),
   clarificationQuestion: z.string().max(512).nullable(),
   clarificationChoices: z.array(z.string().max(160)).max(6),
+  errorCode: z.string().min(1).max(80).optional(),
 });
 
 export type PanelChatCommand = z.infer<typeof PanelChatCommandSchema>;

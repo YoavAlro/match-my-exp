@@ -252,7 +252,7 @@ const openPanelHarness = async (context, worker, fixture) => {
 };
 
 const configureProvider = async (panel) => {
-  await panel.getByLabel('Provider').selectOption('compatible');
+  await panel.getByRole('combobox').first().selectOption('compatible');
   await panel.getByLabel('Model').fill('packed-model');
   await panel.getByLabel('Responses endpoint').fill(providerEndpoint);
   await panel.getByLabel('Authentication').selectOption('bearer');
@@ -262,7 +262,13 @@ const configureProvider = async (panel) => {
 };
 
 const grantCurrentSite = async (panel) => {
-  await panel.getByRole('button', { name: 'Grant site access' }).click();
+  const alreadyGranted = await panel
+    .getByText('Site access granted')
+    .isVisible()
+    .catch(() => false);
+  if (!alreadyGranted) {
+    await panel.getByRole('button', { name: 'Grant site access' }).click();
+  }
   await panel.getByText('Site access granted').waitFor();
 };
 
