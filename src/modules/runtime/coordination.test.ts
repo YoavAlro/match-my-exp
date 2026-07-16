@@ -61,6 +61,18 @@ describe('ActiveTabCoordinator', () => {
       path: '/account',
       epoch: 1,
     });
+    expect(
+      await handlePanelReadinessRequest(
+        {
+          ...readinessRequest,
+          requestId: '00000000-0000-4000-8000-000000000002',
+        },
+        panelSender,
+        coordinator,
+        queryActiveTab,
+      ),
+    ).toMatchObject({ readiness: 'ready', tabId: 7, epoch: 1 });
+    expect(queryActiveTab).toHaveBeenCalledOnce();
   });
 
   it('classifies unavailable and unsupported tabs', () => {

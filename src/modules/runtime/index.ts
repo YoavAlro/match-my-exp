@@ -7,5 +7,5 @@ export {
   type RuntimeSender,
   type TabSnapshot,
 } from './coordination';
-export { installRuntimeCoordination } from './install';
+export { installActionPanel, installRuntimeCoordination } from './install';
 export { installProfileBridge } from './profile-bridge';

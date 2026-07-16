@@ -239,6 +239,10 @@ export const handlePanelReadinessRequest = async (
   if (!request.success || !coordinator.isTrustedPanelSender(sender)) {
     return undefined;
   }
+  const current = coordinator.readiness(request.data.requestId);
+  if (current.readiness !== 'unavailable') {
+    return current;
+  }
   coordinator.update(await queryActiveTab());
   return coordinator.readiness(request.data.requestId);
 };

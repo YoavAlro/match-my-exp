@@ -1,5 +1,6 @@
 import {
   ActiveTabCoordinator,
+  installActionPanel,
   installPanelChatBridge,
   installProfileBridge,
   installRuntimeCoordination,
@@ -14,11 +15,8 @@ export default defineBackground(() => {
   installPanelChatBridge(browser, coordinator);
   installProfileBridge(browser);
   installRuntimeCoordination(browser, coordinator);
+  installActionPanel(browser, coordinator);
   installProfileRegistrations(browser);
-
-  void browser.sidePanel.setPanelBehavior({
-    openPanelOnActionClick: true,
-  });
 
   void browser.storage.local.setAccessLevel({
     accessLevel: 'TRUSTED_CONTEXTS',

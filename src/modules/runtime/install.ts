@@ -6,6 +6,7 @@ import {
 } from './coordination';
 
 type BrowserRuntimeApi = Pick<typeof browser, 'runtime' | 'tabs'>;
+type BrowserPanelApi = Pick<typeof browser, 'action' | 'sidePanel'>;
 
 const senderSnapshot = (
   sender: Parameters<
@@ -73,4 +74,16 @@ export const installRuntimeCoordination = (
   });
   api.tabs.onRemoved.addListener((tabId) => coordinator.invalidate(tabId));
   return coordinator;
+};
+
+export const installActionPanel = (
+  api: BrowserPanelApi,
+  coordinator: ActiveTabCoordinator,
+) => {
+  api.action.onClicked.addListener((tab) => {
+    coordinator.update(tabSnapshot(tab));
+    if (tab.id !== undefined) {
+      void api.sidePanel.open({ tabId: tab.id });
+    }
+  });
 };

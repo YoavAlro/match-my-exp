@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { installRuntimeCoordination } from './install';
+import { ActiveTabCoordinator } from './coordination';
+import { installActionPanel, installRuntimeCoordination } from './install';
 
 const requestId = '00000000-0000-4000-8000-000000000001';
 
@@ -67,6 +68,7 @@ describe('installRuntimeCoordination', () => {
 
     expect(response).toMatchObject({ readiness: 'ready', tabId: 12, epoch: 1 });
     expect(query).toHaveBeenCalledWith({ active: true, currentWindow: true });
+    activatedListener?.();
     query.mockResolvedValueOnce([]);
     expect(
       await messageListener?.(
@@ -81,7 +83,6 @@ describe('installRuntimeCoordination', () => {
         },
       ),
     ).toMatchObject({ readiness: 'unavailable' });
-    activatedListener?.();
     expect(coordinator.readiness(requestId).readiness).toBe('unavailable');
     coordinator.update({ id: 12, url: 'https://example.com/account' });
     updatedListener?.(12, {});
@@ -91,5 +92,41 @@ describe('installRuntimeCoordination', () => {
     coordinator.update({ id: 12, url: 'https://example.com/account' });
     removedListener?.(12);
     expect(coordinator.readiness(requestId).readiness).toBe('unavailable');
+  });
+
+  it('captures the clicked tab before opening its side panel', async () => {
+    let clicked: ((tab: { id?: number; url?: string }) => void) | undefined;
+    const open = vi.fn().mockResolvedValue(undefined);
+    const api = {
+      action: {
+        onClicked: {
+          addListener: (listener: typeof clicked) => {
+            clicked = listener;
+          },
+        },
+      },
+      sidePanel: { open },
+    };
+    const coordinator = new ActiveTabCoordinator(
+      'extension-id',
+      'chrome-extension://extension-id/',
+    );
+    installActionPanel(
+      api as unknown as Parameters<typeof installActionPanel>[0],
+      coordinator,
+    );
+
+    clicked?.({ url: 'https://example.com/account' });
+    expect(open).not.toHaveBeenCalled();
+    clicked?.({ id: 12, url: 'https://example.com/account' });
+
+    expect(coordinator.readiness(requestId)).toMatchObject({
+      readiness: 'ready',
+      tabId: 12,
+      origin: 'https://example.com',
+      path: '/account',
+    });
+    expect(open).toHaveBeenCalledWith({ tabId: 12 });
+    await Promise.resolve();
   });
 });
